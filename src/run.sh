@@ -1,3 +1,3 @@
 #!/bin/sh
-module load python3
-python3 script.py
+module load python
+python script.py
