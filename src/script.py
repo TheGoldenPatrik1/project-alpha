@@ -314,4 +314,9 @@ def run_predictor(input_txt, use_tokenizer=False, sentence_format=False, ignore_
   print()
   print_sep()
 
-run_predictor("A tree fell on my house, but I survived.", use_tokenizer=True)
+run_predictor("""Once upon a midnight dreary, while I pondered, weak and weary,
+Over many a quaint and curious volume of forgotten lore—
+    While I nodded, nearly napping, suddenly there came a tapping,
+As of some one gently rapping, rapping at my chamber door.
+“’Tis some visitor,” I muttered, “tapping at my chamber door—
+            Only this and nothing more.”""")#, use_tokenizer=True)
