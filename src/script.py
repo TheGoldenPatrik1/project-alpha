@@ -314,4 +314,4 @@ def run_predictor(input_txt, use_tokenizer=False, sentence_format=False, ignore_
   print()
   print_sep()
 
-run_predictor("I would like to ask Donna a question. I plan on asking her why she uses cream. Alas, I hate candy.", use_tokenizer=True)
+run_predictor("A tree fell on my house, but I survived.", use_tokenizer=True)
