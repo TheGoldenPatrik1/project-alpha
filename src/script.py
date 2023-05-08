@@ -196,16 +196,16 @@ def pred_word(txt, correct_word):
     is_stop = "TRUE"
   else:
     is_stop = "FALSE"
-  print_word(
-    masked_word=correct_word,
-    predicted_word=tokens[0],
-    prediction_result=result,
-    correct_index=display_index,
-    similarity=f"{similarity}",
-    top_predictions=', '.join(tokens[1:4]),
-    prediction_category=f"{category}",
-    stop_word = is_stop
-  )
+  #print_word(
+    #masked_word=correct_word,
+    #predicted_word=tokens[0],
+    #prediction_result=result,
+    #correct_index=display_index,
+    #similarity=f"{similarity}",
+    #top_predictions=', '.join(tokens[1:4]),
+    #prediction_category=f"{category}",
+    #stop_word = is_stop
+  #)
   return {
       "result": result,
       "index": index,
@@ -215,10 +215,10 @@ def pred_word(txt, correct_word):
   }
 
 def get_predictions(text, ignore_proper=False):
-  print(f"\nBeginning predictions on new sentence... <<<{text}>>>")
-  print_sep()
-  print_word()
-  print_sep()
+  #print(f"\nBeginning predictions on new sentence... <<<{text}>>>")
+  #print_sep()
+  #print_word()
+  #print_sep()
   sentences = [text, ""]
   spl = text.split(" ")
   index = 0
@@ -259,8 +259,8 @@ def get_predictions(text, ignore_proper=False):
     [sentence_embeddings[1]]
   )[0][0]), 2)
   stats["with_stop"].add_sentence_similarity(sentence_similarity)
-  print_sep()
-  print(f"Sentence similarity score: {sentence_similarity}")
+  #print_sep()
+  #print(f"Sentence similarity score: {sentence_similarity}")
 
   return stats
 
@@ -299,7 +299,7 @@ def run_predictor(input_txt, use_tokenizer=False, sentence_format=False, ignore_
       outputs = nsp_model(**encoding)[0]
       softmax = F.softmax(outputs, dim = 1)
       score = round(float(softmax[0][0].item()) * 100, 2)
-      print(f"Next sentence prediction score: {score}")
+      #print(f"Next sentence prediction score: {score}")
       stats["with_stop"].add_nsp_score(score)
   
   for word in result_list:
