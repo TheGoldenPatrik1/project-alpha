@@ -11,6 +11,10 @@ import matplotlib.pyplot as plt
 import torch
 import re
 import nltk
+import time
+import math
+
+start = time.time()
 
 tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 model = BertForMaskedLM.from_pretrained('bert-base-uncased', return_dict=True)
@@ -316,3 +320,6 @@ def run_predictor(input_txt, use_tokenizer=False, sentence_format=False, ignore_
 
 run_predictor("""nuns fret not at their convent’s narrow room; and hermits are contented with their cells;
 """)#, use_tokenizer=True)
+
+end = time.time()
+print(f"Program took {math.floor(end - start)} time to run.")
