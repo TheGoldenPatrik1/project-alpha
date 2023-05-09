@@ -54,19 +54,19 @@ class Stats:
       self.data["incorrect"] += 1
       if res["similarity"] != "Not Found":
         self.data["incorrect_similarity"] += res["similarity"]
-    if res["index"] == SEARCH_LIMIT:
-      self.data["not_found"] += 1
-    self.data["index_sum"] += res["index"]
+    #if res["index"] == SEARCH_LIMIT:
+      #self.data["not_found"] += 1
+    #self.data["index_sum"] += res["index"]
     if res["similarity"] != "Not Found":
       self.data["similarity"] += res["similarity"]
       self.data["similarities"].append(res["similarity"])
-    self.data["categories"][res["category"] - 1] += 1
+    #self.data["categories"][res["category"] - 1] += 1
   
   def add_obj(self, res):
     self.data["correct"] += res["correct"]
     self.data["incorrect"] += res["incorrect"]
-    self.data["index_sum"] += res["index_sum"]
-    self.data["not_found"] += res["not_found"]
+    #self.data["index_sum"] += res["index_sum"]
+    #self.data["not_found"] += res["not_found"]
     self.data["similarity"] += res["similarity"]
     self.data["incorrect_similarity"] += res["incorrect_similarity"]
     self.data["similarities"] += res["similarities"]
@@ -74,8 +74,8 @@ class Stats:
       self.data["sentence_similarity"] += res["sentence_similarity"]
     if res["nsp_score"] != 0:
       self.data["nsp_score"] += res["nsp_score"]
-    for i in range(len(res["categories"])):
-      self.data["categories"][i] += res["categories"][i]
+    #for i in range(len(res["categories"])):
+      #self.data["categories"][i] += res["categories"][i]
 
   def get_data(self):
     return self.data
@@ -100,8 +100,8 @@ class Stats:
     print(f"\nCorrect Predictions   = {self.data['correct']} {get_percent(self.data['correct'], total)}")
     print(f"Incorrect Predictions = {self.data['incorrect']} {get_percent(self.data['incorrect'], total)}")
     print(f"Total Predictions     = {total}")
-    print(f"\nAverage Index         = {round(self.data['index_sum'] / total, 1)}")
-    print(f"Indexes Not Found     = {self.data['not_found']} {get_percent(self.data['not_found'], total)}")
+    #print(f"\nAverage Index         = {round(self.data['index_sum'] / total, 1)}")
+    #print(f"Indexes Not Found     = {self.data['not_found']} {get_percent(self.data['not_found'], total)}")
     print(f"Average Similarity    = {round(self.data['similarity'] / total, 2)}")
     if (self.data['incorrect'] != 0):
       print(f"Incorrect Similarity  = {round(self.data['incorrect_similarity'] / self.data['incorrect'], 2)}\n")
@@ -112,15 +112,15 @@ class Stats:
     plt.title('Similarity Score Distribution')
     plt.show()
 
-    print("\nPredictions by Index Category:\n")
-    categories_txt = ["0", "1", "2-9", "10-99", "100-999", "1000-4999", "5000-Not Found"]
-    categories_sum = 0
-    for i in range(len(self.data['categories'])):
-      categories_sum += self.data['categories'][i] * (i + 1)
-      txt = f"#{i + 1} ({categories_txt[i]}) "
-      print(f"{pad_word(txt, 22)}= {self.data['categories'][i]} {get_percent(self.data['categories'][i], total)}")
-    div = categories_sum / total
-    print(f"\nAverage Category      = {round(div, 1)} (~{categories_txt[round(div) - 1]})")
+    #print("\nPredictions by Index Category:\n")
+    #categories_txt = ["0", "1", "2-9", "10-99", "100-999", "1000-4999", "5000-Not Found"]
+    #categories_sum = 0
+    #for i in range(len(self.data['categories'])):
+      #categories_sum += self.data['categories'][i] * (i + 1)
+      #txt = f"#{i + 1} ({categories_txt[i]}) "
+      #print(f"{pad_word(txt, 22)}= {self.data['categories'][i]} {get_percent(self.data['categories'][i], total)}")
+    #div = categories_sum / total
+    #print(f"\nAverage Category      = {round(div, 1)} (~{categories_txt[round(div) - 1]})")
 
 def pad_word(input_str, length):
   for x in range(length - len(input_str)):
@@ -131,19 +131,19 @@ def print_word(
     masked_word="Masked Word",
     predicted_word="Predicted Word",
     prediction_result="Prediction Result",
-    correct_index="Index of Correct Word",
+    #correct_index="Index of Correct Word",
     similarity="Similarity",
     top_predictions="Next Three Predictions",
-    prediction_category="Category",
+    #prediction_category="Category",
     stop_word="Stop Word"
 ):
   print(f"| {pad_word(masked_word, 16)} ", end = '')
   print(f"| {pad_word(predicted_word, 16)} ", end = '')
   print(f"| {pad_word(prediction_result, 17)} ", end = '')
-  print(f"| {pad_word(correct_index, 21)} ", end = '')
+  #print(f"| {pad_word(correct_index, 21)} ", end = '')
   print(f"| {pad_word(similarity, 10)} ", end = '')
   print(f"| {pad_word(top_predictions, 36)} ", end = '')
-  print(f"| {pad_word(prediction_category, 8)} ", end = '')
+  #print(f"| {pad_word(prediction_category, 8)} ", end = '')
   print(f"| {pad_word(stop_word, 9)} |")
 
 def print_sep():
@@ -163,35 +163,36 @@ def pred_word(txt, correct_word):
     word = tokenizer.decode([token])
     if re.search(r'^\W+$', word) == None:
       tokens.append(word)
+      break
   if tokens[0] == correct_word:
     result = "CORRECT"
   else:
     result = "INCORRECT"
-  try:
-    index = tokens.index(correct_word)
-  except:
-    index = "Not Found"
-  display_index = f"{index}"
-  if index == "Not Found":
-    index = SEARCH_LIMIT
+  #try:
+    #index = tokens.index(correct_word)
+  #except:
+    #index = "Not Found"
+  #display_index = f"{index}"
+  #if index == "Not Found":
+    #index = SEARCH_LIMIT
   try:
     similarity = round(100 * float(vec_model.similarity(correct_word, tokens[0])), 2)
   except:
     similarity = "Not Found"
-  if index == 0:
-    category = 1
-  elif index == 1:
-    category = 2
-  elif index < 10:
-    category = 3
-  elif index < 100:
-    category = 4
-  elif index < 1000:
-    category = 5
-  elif index < 5000:
-    category = 6
-  else:
-    category = 7
+  #if index == 0:
+    #category = 1
+  #elif index == 1:
+    #category = 2
+  #elif index < 10:
+    #category = 3
+  #elif index < 100:
+    #category = 4
+  #elif index < 1000:
+    #category = 5
+  #elif index < 5000:
+    #category = 6
+  #else:
+    #category = 7
   if correct_word in stop_word_list:
     is_stop = "TRUE"
   else:
@@ -208,9 +209,9 @@ def pred_word(txt, correct_word):
   #)
   return {
       "result": result,
-      "index": index,
+      #"index": index,
       "similarity": similarity,
-      "category": category,
+      #"category": category,
       "pred_word": tokens[0]
   }
 
