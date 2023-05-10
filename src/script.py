@@ -15,6 +15,7 @@ import nltk
 import time
 import math
 import json
+import requests
 
 start = time.time()
 
@@ -345,7 +346,17 @@ def run_predictor(input_txt, use_tokenizer=False, sentence_format=False, ignore_
 #The majority of scholarly articles on the subject of drone strikes fail to consider both sides, as I have outlined above. Scholars either focus on the positive aspects of drone strikes and give evidence to support it, or they focus on the social backlash from locals and ignore the military benefits of drones. Now, I will suggest a more effective way for scholars to approach the topic of drone use. I propose that scholars begin with an examination of terrorism and the role drones play as a necessary evil. It is important that they clearly denote that the debate is concerning how drones should be used rather than if they should be used. Subsequently, after evaluating the reasons for the existence of drones, I believe that weighing the positive arguments against the negative arguments and producing a framework is the most complete way to arrive at suitable solutions. As I have mentioned previously, arguments that omit one side of the debate are deficient and leave the audience more confused after reading the paper. Furthermore, in my examination of the arguments, I find that certain points are valid while others are uncompelling arguments. Of those made in support of drones, the argument that drones are efficient and effective in the elimination of potential terrorists is supported by the statistics on drone use. Of those made against the use of drones, the argument that the presence of drones over a country greatly rips apart the social fabric is also supported by statistics and remarks which reflect population sentiment. 
 #In general, the arguments made by scholars regarding military drones are one-sided and incomplete. They frequently attempt to unblur the lines between military and social contexts, hoping that a valid solution can be reached from an examination of either side of the debate, rather than both. However, the thought process behind the solution to this issue is far more complex. Considering that the catalyst of drone development itself is terrorism, it is necessary that the drone operates in a gray area between military and non-military environments, as terrorists can only be eliminated through military-style attacks in non-military zones. Thus, any arguments failing to mention points on both sides of the issue can instantly be dismissed. Still, there remain scholars who make strong arguments for their view and then provide irrelevant opposing points that can easily be refuted- not because their argument is valid, but because the opposing point simply addresses a different issue. These arguments may be easily dismissed as well. The complete answer requires both critics and proponents. While the critic may argue that the social outfall is disastrous, and the proponent may argue that the drone is the most efficient military weapon, a true solution requires a combination and comparison between the two. While the complete solution is far more intricate, the essential ultimatum is this: if the drone’s targets are more dangerous and harmful than the social fallout that will occur as a result, then a drone strike is the best possible answer. If the external social effects are worse than the military gain from using a drone, then the military must use traditional methods.""", use_tokenizer=True)
 
-run_predictor("It is time to test another sentence.", use_tokenizer=False)
+r = requests.get(r'https://www.gutenberg.org/cache/epub/64317/pg64317.txt')
+great_gatsby = r.text
+
+# first, remove unwanted new line and tab characters from the text
+for char in ["\r", "\d", "\t"]:
+    great_gatsby = great_gatsby.replace(char, " ")
+    
+# you can also subset for the book text
+# (removing the project gutenburg introduction/footnotes)
+great_gatsby = great_gatsby[1433:277912]
+run_predictor(great_gatsby, use_tokenizer=True)
 
 end = time.time()
 seconds = end - start
