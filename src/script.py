@@ -324,6 +324,12 @@ def run_predictor(input_txt, use_tokenizer=False, sentence_format=False, ignore_
     print(f"Average NSP Score     = {round(stats['with_stop'].get_nsp_score() / (sentence_counter - 1), 2)}")
   print()
   print_sep()
+  
+  total_obj["metadata"] = {
+    "type": "prose",
+    "author": "N/A",
+    "sentence_counter": sentence_counter
+  }
   print(json.dumps(total_obj, indent=4))
 
 #run_predictor("""Over the past twenty years, drone usage by the United States military has grown exponentially, mostly due to their role in the fight against terrorism. Airstrikes and drone reconnaissance have reached new highs in the past decade, with rates increasing from eight drone strikes per year in 2007 to 2,776 strikes in 2017 . The nature of drone technology blurs the line between military and non-military counterterrorism, which is only natural since the catalyst itself, terrorism, combines both military and non-military  contexts. As a result, drones raise new questions in ethics and morality, specifically regarding the overarching effects of distorting the lines between military and social contexts and whether drone use by the military is ultimately beneficial or harmful. Therefore, the debate has formed between those who support the traditional use of the military in the fight against terrorism, and those who believe the military must adapt its policies as situations change. More specifically, while both sides agree that there are advantages and drawbacks to the use of drones to fight terrorism, contention ensues in determining whether these advantages offset the disadvantages. In general, scholars approach this question in regard to either the social drawbacks or the military advantages of drone strikes. In contrast, I suggest that the most complete solution to the use of drones by the military considers both the advantages of drones in relation to traditional weapons and the external social effect of drone strikes in foreign countries.
