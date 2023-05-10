@@ -159,7 +159,15 @@ def pred_word(txt, correct_word):
 
   logits = output.logits
   softmax = F.softmax(logits, dim = -1)
-  mask_word = softmax[0, mask_index, :]
+  try:
+    mask_word = softmax[0, mask_index, :]
+  except:
+    print("error occurred with line 163")
+    return {
+      "result": "INCORRECT",
+      "similarity": 0,
+      "pred_word": "UNKNOWN"
+    }
   top = torch.topk(mask_word, SEARCH_LIMIT, dim = 1)[1][0]
   tokens = []
   for token in top:
