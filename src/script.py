@@ -427,10 +427,10 @@ books = {
 }
 
 book_array = list(books.keys())[1:4]
-for book in book_array:
-  print(f"BEGIN getting predictions for {books[book]['title']}")
-  get_book(books[book])
-  print(f"END getting predictions for {books[book]['title']}")
+for book_key in book_array:
+  print(f"BEGIN getting predictions for {books[book_key]['title']}")
+  get_book(books[book_key])
+  print(f"END getting predictions for {books[book_key]['title']}")
 
 end = time.time()
 seconds = end - start
