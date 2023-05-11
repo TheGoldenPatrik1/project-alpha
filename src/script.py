@@ -45,7 +45,7 @@ class Stats:
       "similarity": 0,
       #"categories": [0, 0, 0, 0, 0, 0, 0],
       "sentence_similarity": 0,
-      "similarities": [],
+      #"similarities": [],
       "incorrect_similarity": 0,
       "nsp_score": 0
     }
@@ -62,7 +62,7 @@ class Stats:
     #self.data["index_sum"] += res["index"]
     if res["similarity"] != "Not Found":
       self.data["similarity"] += res["similarity"]
-      self.data["similarities"].append(res["similarity"])
+      #self.data["similarities"].append(res["similarity"])
     #self.data["categories"][res["category"] - 1] += 1
   
   def add_obj(self, res):
@@ -72,7 +72,7 @@ class Stats:
     #self.data["not_found"] += res["not_found"]
     self.data["similarity"] += res["similarity"]
     self.data["incorrect_similarity"] += res["incorrect_similarity"]
-    self.data["similarities"] += res["similarities"]
+    #self.data["similarities"] += res["similarities"]
     if res["sentence_similarity"] != 0:
       self.data["sentence_similarity"] += res["sentence_similarity"]
     if res["nsp_score"] != 0:
@@ -109,11 +109,11 @@ class Stats:
     if (self.data['incorrect'] != 0):
       print(f"Incorrect Similarity  = {round(self.data['incorrect_similarity'] / self.data['incorrect'], 2)}\n")
 
-    plt.hist(self.data["similarities"], 10, (0, 100), color = 'green', histtype = 'bar', rwidth = 0.8)
-    plt.xlabel('Similarity Scores')
-    plt.ylabel('Number of Appearances')
-    plt.title('Similarity Score Distribution')
-    plt.show()
+    #plt.hist(self.data["similarities"], 10, (0, 100), color = 'green', histtype = 'bar', rwidth = 0.8)
+    #plt.xlabel('Similarity Scores')
+    #plt.ylabel('Number of Appearances')
+    #plt.title('Similarity Score Distribution')
+    #plt.show()
 
     #print("\nPredictions by Index Category:\n")
     #categories_txt = ["0", "1", "2-9", "10-99", "100-999", "1000-4999", "5000-Not Found"]
@@ -336,6 +336,7 @@ def run_predictor(input_txt, use_tokenizer=False, sentence_format=False, ignore_
   
   total_obj["metadata"] = {
     "type": "prose",
+    "name": "N/A",
     "author": "N/A",
     "sentence_counter": sentence_counter
   }
