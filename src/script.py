@@ -1,3 +1,13 @@
+import sys
+
+print(len(sys.argv))
+if len(sys.argv) > 1:
+  arg1 = sys.argv[1]
+  print(arg1)
+  if arg1 == "yes":
+    print("correct arg1")
+return
+
 from gensim.models import Word2Vec
 import gensim.downloader as vec_api
 vec_model = vec_api.load("fasttext-wiki-news-subwords-300")
@@ -299,7 +309,7 @@ def run_predictor(input_txt, use_tokenizer=False, sentence_format=False, ignore_
     sentences = re.split(r'\n+', input_txt.strip())
 
   sentence_counter = 0
-  score_counter = 0
+  #score_counter = 0
   for sentence in sentences:
     if len(sentence.strip()) == 0:
       continue
@@ -312,10 +322,10 @@ def run_predictor(input_txt, use_tokenizer=False, sentence_format=False, ignore_
       outputs = nsp_model(**encoding)[0]
       softmax = F.softmax(outputs, dim = 1)
       score = round(float(softmax[0][0].item()) * 100, 2)
-      if (score > 10 and score < 90):
-        score_counter += 1
-        print(f"Score between 10 and 90 (#{score_counter}): {score}")
-        print(f"Sentence pair: {sentences[sentence_counter - 1]} {sentences[sentence_counter]}")
+      #if (score > 10 and score < 90):
+        #score_counter += 1
+        #print(f"Score between 10 and 90 (#{score_counter}): {score}")
+        #print(f"Sentence pair: {sentences[sentence_counter - 1]} {sentences[sentence_counter]}")
       #print(f"Next sentence prediction score: {score}")
       stats["with_stop"].add_nsp_score(score)
   
@@ -431,7 +441,7 @@ books = {
   }
 }
 
-get_book(books['great_gatspy'])
+#get_book(books['great_gatspy'])
 
 #book_array = list(books.keys())[1:4]
 #for book_key in book_array:
