@@ -49,6 +49,7 @@ def edit_book():
         data_value = int(data_value)
       data[short_name][data_key] = data_value
       set_books(data)
+      print(f"Successfully edited {short_name}!")
     else:
       print(f"ERROR: invalid data key '{data_key}'")
       
@@ -63,7 +64,8 @@ def remove_book():
   
   if short_name in book_list:
     del data[short_name]
-    set_books(data)      
+    set_books(data)   
+    print(f"Successfully removed {short_name}!")
   else:
     print(f"ERROR: book with short_name '{short_name}' not found")
 
