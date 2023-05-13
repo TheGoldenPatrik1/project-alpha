@@ -1,13 +1,3 @@
-import sys
-
-print(len(sys.argv))
-if len(sys.argv) > 1:
-  arg1 = sys.argv[1]
-  print(arg1)
-  if arg1 == "yes":
-    print("correct arg1")
-return
-
 from gensim.models import Word2Vec
 import gensim.downloader as vec_api
 vec_model = vec_api.load("fasttext-wiki-news-subwords-300")
@@ -26,6 +16,7 @@ import time
 import math
 import json
 import requests
+import sys
 
 start = time.time()
 
@@ -366,6 +357,8 @@ def run_predictor(input_txt, use_tokenizer=False, sentence_format=False, ignore_
   print(json.dumps(total_obj, indent=4))
 
 def get_book(selection):
+  print(f"Starting to get predictions for {selection['title']}")
+  
   r = requests.get(selection["url"])
   book = r.text
 
@@ -389,65 +382,27 @@ def get_book(selection):
   
   run_predictor(book, use_tokenizer=True, data=selection)
   
-books = {
-  "great_gatspy": {
-    "url": r'https://www.gutenberg.org/cache/epub/64317/pg64317.txt',
-    "type": "prose-novel",
-    "title": "The Great Gatspy",
-    "author": "F. Scott Fitzgerald",
-    "publish": 1925
-  },
-  "ambassadors": {
-    "url": r'https://www.gutenberg.org/cache/epub/432/pg432.txt',
-    "type": "prose-novel",
-    "title": "The Ambassadors",
-    "author": "Henry James",
-    "publish": 1903
-  },
-  "portrait_of_artist": {
-    "url": r'https://www.gutenberg.org/files/4217/4217-0.txt',
-    "type": "prose-novel",
-    "title": "A Portrait of The Artist as a Young Man",
-    "author": "James Joyce",
-    "publish": 1916
-  },
-  "silas_marner": {
-    "url": r'https://www.gutenberg.org/files/550/550-0.txt',
-    "type": "prose-novel",
-    "title": "Silas Marner",
-    "author": "George Elliot",
-    "publish": 1861
-  },
-  "emma": {
-    "url": r'https://www.gutenberg.org/cache/epub/158/pg158.txt',
-    "type": "prose-novel",
-    "title": "Emma",
-    "author": "Jane Austen",
-    "publish": 1815
-  },
-  "tess": {
-    "url": r'https://www.gutenberg.org/files/110/110-0.txt',
-    "type": "prose-novel",
-    "title": "Tess of the d'Urbervilles",
-    "author": "Thomas Hardy",
-    "publish": 1891
-  },
-  "wuthering_heights": {
-    "url": r'https://www.gutenberg.org/cache/epub/768/pg768.txt',
-    "type": "prose-novel",
-    "title": "Wuthering Heights",
-    "author": "Emily Brontë",
-    "publish": 1847
-  }
-}
-
-#get_book(books['great_gatspy'])
-
-#book_array = list(books.keys())[1:4]
-#for book_key in book_array:
-  #print(f"BEGIN getting predictions for {books[book_key]['title']}")
-  #get_book(books[book_key])
-  #print(f"END getting predictions for {books[book_key]['title']}")
+with open('books.txt') as f:
+  books = json.load(f)
+  book_list = list(books.keys())
+  if len(sys.argv) > 1:
+    arg1 = sys.argv[1]
+    if arg1.isdigit():
+      arg1 = int(arg1)
+      if arg1 >= len(book_list):
+        print(f"ERROR: {arg1} is greater than length of book list ({len(book_list)})")
+      else:
+        book = books[book_list[arg1]]
+        get_book(book)
+    else:
+      arg1 = arg1.lower()
+      if arg1 in book_list:
+        book = books[arg1]
+        get_book(book)
+      else:
+        print(f"ERROR: {arg1} is not in book list")
+  else:
+    print(f"ERROR: no book specified")
 
 end = time.time()
 seconds = end - start
