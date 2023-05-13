@@ -1,14 +1,3 @@
-from gensim.models import Word2Vec
-import gensim.downloader as vec_api
-vec_model = vec_api.load("fasttext-wiki-news-subwords-300")
-
-from numpy import False_
-from transformers import BertTokenizer, BertForMaskedLM, BertForNextSentencePrediction
-from torch.nn import functional as F
-from sentence_transformers import SentenceTransformer
-from sklearn.metrics.pairwise import cosine_similarity
-import matplotlib.pyplot as plt
-
 import torch
 import re
 import nltk
@@ -19,6 +8,17 @@ import requests
 import sys
 
 start = time.time()
+
+from gensim.models import Word2Vec
+import gensim.downloader as vec_api
+vec_model = vec_api.load("fasttext-wiki-news-subwords-300")
+
+from numpy import False_
+from transformers import BertTokenizer, BertForMaskedLM, BertForNextSentencePrediction
+from torch.nn import functional as F
+from sentence_transformers import SentenceTransformer
+from sklearn.metrics.pairwise import cosine_similarity
+import matplotlib.pyplot as plt
 
 tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 model = BertForMaskedLM.from_pretrained('bert-base-uncased', return_dict=True)
