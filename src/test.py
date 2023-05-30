@@ -14,6 +14,7 @@ def set_books(data):
 
 def add_book():
   short_name = input("Enter the short name: ")
+  short_name = short_name.lower().replace("-", "_")
   book_type = input("Enter the book type: ")
   url = input("Enter the url: ")
   title = input("Enter the title: ")
@@ -50,6 +51,12 @@ def edit_book():
       data[short_name][data_key] = data_value
       set_books(data)
       print(f"Successfully edited {short_name}!")
+    else if "short" in data_key:
+      data_value = input(f"Enter the new short name for '{short_name}': ")
+      data_value = data_value.strip().lower().replace("-", "_")
+      data[data_value] = data.pop(short_name)
+      set_books(data)
+      rint(f"Successfully edited the short name to '{data_value}'!")
     else:
       print(f"ERROR: invalid data key '{data_key}'")
       
@@ -69,16 +76,29 @@ def remove_book():
   else:
     print(f"ERROR: book with short_name '{short_name}' not found")
 
-validArgString = "Valid arguments: add, edit, OR remove"
+def list_books():
+  data = get_books()
+  book_list = list(data.keys())
+  print(f"There are currently {len(book_list)} books:")
+  for book in book_list:
+    print(f"{data[book]['title']} by {data[book]['author']} [{book}]")
+
+validArgString = "Valid arguments: add, edit, remove, OR list"
+arg1 = ""
+
 if len(sys.argv) == 1:
-  print(f"ERROR: no arguments specified\n{validArgString}")
+  arg1 = input(f"{validArgString}\nPlease specify one: ")
+  arg1 = arg1.lower()
 else:
   arg1 = sys.argv[1].lower()
-  if arg1 == "add":
-    add_book()
-  elif arg1 == "edit":
-    edit_book()
-  elif arg1 == "remove":
-    remove_book()
-  else:
-    print(f"ERROR: invalid argument\n{validArgString}")
+
+if arg1 == "add":
+  add_book()
+elif arg1 == "edit":
+  edit_book()
+elif arg1 == "remove":
+  remove_book()
+elif arg1 == "list":
+  list_books()
+else:
+  print(f"ERROR: invalid argument\n{validArgString}")
