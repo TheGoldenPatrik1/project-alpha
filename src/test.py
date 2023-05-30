@@ -56,7 +56,7 @@ def edit_book():
       data_value = data_value.strip().lower().replace("-", "_")
       data[data_value] = data.pop(short_name)
       set_books(data)
-      rint(f"Successfully edited the short name to '{data_value}'!")
+      print(f"Successfully edited the short name to '{data_value}'!")
     else:
       print(f"ERROR: invalid data key '{data_key}'")
       
