@@ -51,7 +51,7 @@ def edit_book():
       data[short_name][data_key] = data_value
       set_books(data)
       print(f"Successfully edited {short_name}!")
-    else if "short" in data_key:
+    elif "short" in data_key:
       data_value = input(f"Enter the new short name for '{short_name}': ")
       data_value = data_value.strip().lower().replace("-", "_")
       data[data_value] = data.pop(short_name)
