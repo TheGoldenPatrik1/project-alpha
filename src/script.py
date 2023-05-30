@@ -366,13 +366,13 @@ def get_book(selection):
   for char in ["\r", "\d", "\t"]:
     book = book.replace(char, " ")
 
-  start_pos = re.search(r'\*\*\*\s*START OF TH(E|IS) PROJECT GUTENBERG EBOOK .+?\s*\*\*\*', book)
+  start_pos = re.search(r'\*\*\*\s*START OF TH(E|IS) PROJECT GUTENBERG EBOOK .+?\*\*\*', book, re.M | re.S)
   if start_pos == None:
     print(f"ERROR: no start position found for {selection['title']}")
     return
   start_pos = start_pos.end()
 
-  end_pos = re.search(r'\*\*\*\s*END OF TH(E|IS) PROJECT GUTENBERG EBOOK .+?\s*\*\*\*', book)
+  end_pos = re.search(r'\*\*\*\s*END OF TH(E|IS) PROJECT GUTENBERG EBOOK .+?\*\*\*', book, re.M | re.S)
   if end_pos == None:
     print(f"ERROR: no end position found for {selection['title']}")
     return
