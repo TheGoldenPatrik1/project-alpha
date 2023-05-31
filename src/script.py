@@ -155,6 +155,13 @@ def print_sep():
 
 def pred_word(txt, correct_word):
   input = tokenizer.encode_plus(txt, return_tensors = "pt")
+  if input['input_ids'].size(dim=1) > 512:
+    print("error with giant sentence")
+    return {
+      "result": "INCORRECT",
+      "similarity": 0,
+      "pred_word": "UNKNOWN"
+    }
   mask_index = torch.where(input["input_ids"][0] == tokenizer.mask_token_id)
   output = model(**input)
 
