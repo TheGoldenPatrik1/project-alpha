@@ -310,6 +310,8 @@ def run_predictor(input_txt, use_tokenizer=False, sentence_format=False, ignore_
       stats[f"{word}_stop"].add_obj(res[f"{word}_stop"].get_data())
     if len(sentences) > 1 and sentence_counter < (len(sentences)):
       encoding = tokenizer.encode_plus(sentences[sentence_counter - 1], sentences[sentence_counter], return_tensors='pt')
+      if encoding['input_ids'].size(dim=1) > 512:
+        continue
       outputs = nsp_model(**encoding)[0]
       softmax = F.softmax(outputs, dim = 1)
       score = round(float(softmax[0][0].item()) * 100, 2)
