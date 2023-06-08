@@ -526,6 +526,7 @@ Is the motive for redistricting partisan, or is it racial? In a nation in which 
   if len(sys.argv) > 1:
     arg1 = sys.argv[1]
     if arg1.isdigit():
+      arg1 = int(arg1)
       text_list = list(texts.keys())
       length = len(text_list)
       if arg1 >= length:
