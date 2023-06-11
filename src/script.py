@@ -1060,7 +1060,7 @@ Quietly shining to the quiet moon."""
       else:
         text = texts[text_list[arg1]]
         print(f"running predictor on text by {text_list[arg1]}")
-        run_predictor(text, sentence_format=True)
+        run_predictor(text)
     else:
       print(f"ERROR: {arg1} is not a valid text")
   else:
