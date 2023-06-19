@@ -1081,8 +1081,14 @@ Quietly shining to the quiet moon."""
         print(f"ERROR: {arg1} is greater than length of text list ({length})")
       else:
         text = texts[text_list[arg1]]
-        print(f"running predictor on text by {text_list[arg1]}")
+        print(f"running predictor on text: {text_list[arg1]}")
         run_predictor(text)
+    elif arg1.lower() == 'all':
+      text_list = list(texts.keys())
+      for txt in text_list:
+        print(f"running predictor on text: {txt}")
+        run_predictor(texts[txt], nsp_only=True)
+        print()
     else:
       print(f"ERROR: {arg1} is not a valid text")
   else:
