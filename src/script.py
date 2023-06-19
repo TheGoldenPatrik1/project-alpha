@@ -290,7 +290,26 @@ def get_percent(part, whole):
   else:
     return f"({round((part / whole) * 100, 1)}%)"
 
-def run_predictor(input_txt, use_tokenizer=False, sentence_format=False, ignore_proper=False, data=False):
+def get_nsp(sentences):
+  total_score = 0
+  total_count = 0
+  sentences = list(filter(lambda x: len(x.strip()) > 0, sentences))
+  for sentence in sentences:
+    for next_sentence in sentences:
+      if sentence == next_sentence:
+        continue
+      encoding = tokenizer.encode_plus(sentence, next_sentence, return_tensors='pt')
+      if encoding['input_ids'].size(dim=1) > 512:
+        continue
+      outputs = nsp_model(**encoding)[0]
+      softmax = F.softmax(outputs, dim = 1)
+      total_score += round(float(softmax[0][0].item()) * 100, 2)
+      total_count += 1
+  print(f"Generated {total_count} sentence pairs from {len(sentences)} sentences")
+  print(f"Compare with n(n-1): {len(sentences)*(len(sentences)-1)}")
+  print(f"Average score: {round(total_score / total_count, 2)}")
+  
+def run_predictor(input_txt, use_tokenizer=False, sentence_format=False, ignore_proper=False, data=False, nsp_only=False):
   stats = {}
   for word in result_list:
     stats[f"{word}_stop"] = Stats()
@@ -306,6 +325,9 @@ def run_predictor(input_txt, use_tokenizer=False, sentence_format=False, ignore_
   else:
     sentences = re.split(r'\n+', input_txt.strip())
 
+  if nsp_only:
+    return get_nsp(sentences)
+    
   sentence_counter = 0
   #score_counter = 0
   for sentence in sentences:
