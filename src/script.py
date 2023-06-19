@@ -1082,7 +1082,7 @@ Quietly shining to the quiet moon."""
       else:
         text = texts[text_list[arg1]]
         print(f"running predictor on text: {text_list[arg1]}")
-        run_predictor(text)
+        run_predictor(text, nsp_only=True)
     elif arg1.lower() == 'all':
       text_list = list(texts.keys())
       for txt in text_list:
