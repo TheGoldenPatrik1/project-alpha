@@ -294,6 +294,9 @@ def get_nsp(sentences):
   total_score = 0
   total_count = 0
   sentences = list(filter(lambda x: len(x.strip()) > 0, sentences))
+  if len(sentences) < 2:
+    print(f"There is only {len(sentences)} sentence and thus no NSP can be calculated")
+    return
   for sentence in sentences:
     for next_sentence in sentences:
       if sentence == next_sentence:
