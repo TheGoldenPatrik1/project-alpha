@@ -114,7 +114,7 @@ def list_books():
   book_list = list(data.keys())
   print(f"There are currently {len(book_list)} books:")
   for book in book_list:
-    print(f"{data[book]['title']} by {data[book]['author']} [{book}]")
+    print(f"- {data[book]['title']} by {data[book]['author']} [{book}]")
 
 def list_texts():
   data = get_file('texts')
