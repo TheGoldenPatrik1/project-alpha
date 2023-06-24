@@ -105,7 +105,7 @@ def remove_text():
   if text_key in text_list:
     del data[text_type][text_key]
     set_file('texts', data)
-    print("Removed new text!")
+    print(f"Removed text with key '{text_key}'!")
   else:
     print(f"ERROR: text with key '{text_key}' not found")
 
@@ -124,7 +124,7 @@ def list_texts():
     print(f"There are currently {len(spec_list)} {k}:")
     for item in spec_list:
       print(f"- {item}")
-    print()
+    if k != type_list[-1] print()
 
 validArgString = "Valid arguments: add, edit, remove, OR list"
 file_name = ""
