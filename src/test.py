@@ -124,7 +124,7 @@ def list_texts():
     print(f"There are currently {len(spec_list)} {k}:")
     for item in spec_list:
       print(f"- {item}")
-    if k != type_list[-1] print()
+    if k != type_list[-1]: print()
 
 validArgString = "Valid arguments: add, edit, remove, OR list"
 file_name = ""
