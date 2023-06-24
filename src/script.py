@@ -417,7 +417,7 @@ def get_book(selection):
   run_predictor(book, use_tokenizer=True, data=selection)
 
 def run_books():
-  with open('books.txt') as f:
+  with open('./files/books.txt') as f:
     books = json.load(f)
     book_list = list(books.keys())
     if len(sys.argv) > 1:
@@ -440,31 +440,31 @@ def run_books():
       print(f"ERROR: no book specified")
     
 def run_texts():
-  f = open('./files/texts.txt', 'r')
-  content = json.load(f.read())
-  texts = content['essays']
-  if len(sys.argv) > 1:
-    arg1 = sys.argv[1]
-    if arg1.isdigit():
-      arg1 = int(arg1)
-      text_list = list(texts.keys())
-      length = len(text_list)
-      if arg1 >= length:
-        print(f"ERROR: {arg1} is greater than length of text list ({length})")
+  with open('./files/texts.txt') as f:
+    content = json.load(f)
+    texts = content['essays']
+    if len(sys.argv) > 1:
+      arg1 = sys.argv[1]
+      if arg1.isdigit():
+        arg1 = int(arg1)
+        text_list = list(texts.keys())
+        length = len(text_list)
+        if arg1 >= length:
+          print(f"ERROR: {arg1} is greater than length of text list ({length})")
+        else:
+          text = texts[text_list[arg1]]
+          print(f"running predictor on text: {text_list[arg1]}")
+          run_predictor(text, nsp_only=True, use_tokenizer=True)
+      elif arg1.lower() == 'all':
+        text_list = list(texts.keys())
+        for txt in text_list:
+          print(f"running predictor on text: {txt}")
+          run_predictor(texts[txt], nsp_only=True, use_tokenizer=True)
+          print()
       else:
-        text = texts[text_list[arg1]]
-        print(f"running predictor on text: {text_list[arg1]}")
-        run_predictor(text, nsp_only=True, use_tokenizer=True)
-    elif arg1.lower() == 'all':
-      text_list = list(texts.keys())
-      for txt in text_list:
-        print(f"running predictor on text: {txt}")
-        run_predictor(texts[txt], nsp_only=True, use_tokenizer=True)
-        print()
+        print(f"ERROR: {arg1} is not a valid text")
     else:
-      print(f"ERROR: {arg1} is not a valid text")
-  else:
-    print(f"ERROR: no text specified")
+      print(f"ERROR: no text specified")
 
 run_texts()   
     
