@@ -1,0 +1,100 @@
+{
+  "great_gatspy": {
+    "url": "https://www.gutenberg.org/cache/epub/64317/pg64317.txt",
+    "type": "prose-novel",
+    "title": "The Great Gatspy",
+    "author": "F. Scott Fitzgerald",
+    "publish": 1925
+  },
+  "ambassadors": {
+    "url": "https://www.gutenberg.org/cache/epub/432/pg432.txt",
+    "type": "prose-novel",
+    "title": "The Ambassadors",
+    "author": "Henry James",
+    "publish": 1903
+  },
+  "portrait_of_artist": {
+    "url": "https://www.gutenberg.org/files/4217/4217-0.txt",
+    "type": "prose-novel",
+    "title": "A Portrait of The Artist as a Young Man",
+    "author": "James Joyce",
+    "publish": 1916
+  },
+  "silas_marner": {
+    "url": "https://www.gutenberg.org/files/550/550-0.txt",
+    "type": "prose-novel",
+    "title": "Silas Marner",
+    "author": "George Elliot",
+    "publish": 1861
+  },
+  "emma": {
+    "url": "https://www.gutenberg.org/cache/epub/158/pg158.txt",
+    "type": "prose-novel",
+    "title": "Emma",
+    "author": "Jane Austen",
+    "publish": 1815
+  },
+  "tess": {
+    "url": "https://www.gutenberg.org/files/110/110-0.txt",
+    "type": "prose-novel",
+    "title": "Tess of the d'Urbervilles",
+    "author": "Thomas Hardy",
+    "publish": 1891
+  },
+  "wuthering_heights": {
+    "url": "https://www.gutenberg.org/cache/epub/768/pg768.txt",
+    "type": "prose-novel",
+    "title": "Wuthering Heights",
+    "author": "Emily Bront\u00eb",
+    "publish": 1847
+  },
+  "pamela": {
+    "url": "https://www.gutenberg.org/ebooks/6124.txt.utf-8",
+    "type": "prose-novel",
+    "title": "Pamela, or Virtue Rewarded",
+    "author": "Samuel Richardson",
+    "publish": 1740
+  },
+  "jungle": {
+    "url": "https://www.gutenberg.org/files/140/140-0.txt",
+    "type": "prose-novel",
+    "title": "The Jungle",
+    "author": "Upton Sinclair",
+    "publish": 1905
+  },
+  "archbishop": {
+    "url": "https://www.gutenberg.org/ebooks/69730.txt.utf-8",
+    "type": "prose-novel",
+    "title": "Death comes for the archbishop",
+    "author": "Willa Cather",
+    "publish": 1927
+  },
+  "jacobs_room": {
+    "url": "https://www.gutenberg.org/files/5670/5670.txt",
+    "type": "prose-novel",
+    "title": "Jacob's Room",
+    "author": "Virginia Woolf",
+    "publish": 1922
+  },
+  "tristram_shandy": {
+    "url": "https://www.gutenberg.org/ebooks/1079.txt.utf-8",
+    "type": "prose-novel",
+    "title": "The Life and Opinions of Tristram Shandy, Gentleman",
+    "author": "Laurence Sterne",
+    "publish": 1759
+  },
+  "bleak_house": {
+    "url": "https://www.gutenberg.org/files/1023/1023-0.txt",
+    "type": "prose-novel",
+    "title": "Bleak House",
+    "author": "Charles Dickens",
+    "publish": 1852
+  },
+  "tom_jones": {
+    "url": "https://www.gutenberg.org/files/6593/6593.txt",
+    "type": "prose-novel",
+    "title": "History of Tom Jones, a Foundling",
+    "author": "Henry Fielding",
+    "publish": 1749
+  }
+}
