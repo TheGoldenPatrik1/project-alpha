@@ -140,7 +140,7 @@ while file_name != "books" and file_name != "texts":
   file_name = input("Please specify whether you'd like to access books or texts: ")
   file_name = file_name.lower()
   
-if len(sys.argv) == 2:
+if len(sys.argv) < 3:
   action_name = input(f"{validArgString}\nPlease specify one: ")
   action_name = action_name.lower()
 else:
