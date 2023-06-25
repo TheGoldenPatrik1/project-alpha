@@ -130,6 +130,35 @@ validArgString = "Valid arguments: add, edit, remove, OR list"
 file_name = ""
 action_name = ""
 
+def arg_parse():
+  args = {
+    "use_tokenizer": False,
+    "sentece_format": False,
+    "ignore_proper": False,
+    "nsp_only": False,
+    "args": [],
+    "book": False,
+    "essay": False,
+    "poem": False
+  }
+  if len(sys.argv) == 1: return args
+  sys.argv.pop(0)
+  for arg in sys.argv:
+    arg = arg.lower()
+    if arg.startswith("-"):
+      if "token" in arg: args["use_tokenizer"] = True
+      elif "sent" in arg: args["sentence_format"] = True
+      elif "ignore" in arg or "proper" in arg: args["ignore_proper"] = True
+      elif "nsp" in arg: args["nsp_only"] = True
+      elif "book" in arg: args["book"] = True
+      elif "essay" in arg: args["essay"] = True
+      elif "poem" in arg: args["poem"] = True
+    else:
+      args["args"].append(arg)
+  return args
+
+print(arg_parse())
+
 if len(sys.argv) == 1:
   file_name = input("Please specify whether you'd like to access books or texts: ")
   file_name = file_name.lower()
