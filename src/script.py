@@ -36,6 +36,34 @@ from nltk.tokenize import word_tokenize, sent_tokenize
 nltk.download('punkt')
 nltk.download('averaged_perceptron_tagger')
 
+def arg_parse():
+  args = {
+    "use_tokenizer": False,
+    "sentence_format": False,
+    "ignore_proper": False,
+    "nsp_only": False,
+    "args": [],
+    "book": False,
+    "essay": False,
+    "poem": False
+  }
+  if len(sys.argv) == 1: return args
+  sys.argv.pop(0)
+  for arg in sys.argv:
+    arg = arg.lower()
+    if arg.startswith("-"):
+      if "token" in arg: args["use_tokenizer"] = True
+      elif "sent" in arg: args["sentence_format"] = True
+      elif "ignore" in arg or "proper" in arg: args["ignore_proper"] = True
+      elif "nsp" in arg: args["nsp_only"] = True
+      elif "book" in arg: args["book"] = True
+      elif "essay" in arg: args["essay"] = True
+      elif "poem" in arg: args["poem"] = True
+    else:
+      args["args"].append(arg)
+args = arg_parse()
+arguments = args["args"]
+
 class Stats:
   def __init__(self):
     self.data = {
@@ -312,14 +340,14 @@ def get_nsp(sentences):
   print(f"Compare with n(n-1): {len(sentences)*(len(sentences)-1)}")
   print(f"Average score: {round(total_score / total_count, 2)}")
   
-def run_predictor(input_txt, use_tokenizer=False, sentence_format=False, ignore_proper=False, data=False, nsp_only=False):
+def run_predictor(input_txt, data=False):
   stats = {}
   for word in result_list:
     stats[f"{word}_stop"] = Stats()
 
-  if use_tokenizer:
+  if args["use_tokenizer"]:
     sentences = nltk.sent_tokenize(input_txt)
-  elif sentence_format:
+  elif args["sentence_format"]:
     sentences = nltk.sent_tokenize(input_txt)
     for i in range(len(sentences)):
       newsent = re.sub(r"\n+\s*([A-Z])", lambda m: " " + m.group(1).lower(), sentences[i]).strip()
@@ -328,7 +356,7 @@ def run_predictor(input_txt, use_tokenizer=False, sentence_format=False, ignore_
   else:
     sentences = re.split(r'\n+', input_txt.strip())
 
-  if nsp_only:
+  if args["nsp_only"]:
     return get_nsp(sentences)
     
   sentence_counter = 0
@@ -337,7 +365,7 @@ def run_predictor(input_txt, use_tokenizer=False, sentence_format=False, ignore_
     if len(sentence.strip()) == 0:
       continue
     sentence_counter += 1
-    res = get_predictions(sentence.strip(), ignore_proper)
+    res = get_predictions(sentence.strip(), args["ignore_proper"])
     for word in result_list:
       stats[f"{word}_stop"].add_obj(res[f"{word}_stop"].get_data())
     if len(sentences) > 1 and sentence_counter < (len(sentences)):
@@ -414,14 +442,14 @@ def get_book(selection):
     
   book = book[start_pos:end_pos]
   
-  run_predictor(book, use_tokenizer=True, data=selection)
+  run_predictor(book, data=selection)
 
 def run_books():
   with open('./files/books.txt') as f:
     books = json.load(f)
     book_list = list(books.keys())
-    if len(sys.argv) > 1:
-      arg1 = sys.argv[1]
+    if len(arguments) > 0:
+      arg1 = arguments[0]
       if arg1.isdigit():
         arg1 = int(arg1)
         if arg1 >= len(book_list):
@@ -430,7 +458,6 @@ def run_books():
           book = books[book_list[arg1]]
           get_book(book)
       else:
-        arg1 = arg1.lower()
         if arg1 in book_list:
           book = books[arg1]
           get_book(book)
@@ -439,12 +466,12 @@ def run_books():
     else:
       print(f"ERROR: no book specified")
     
-def run_texts():
+def run_texts(content_type):
   with open('./files/texts.txt') as f:
     content = json.load(f)
-    texts = content['essays']
-    if len(sys.argv) > 1:
-      arg1 = sys.argv[1]
+    texts = content[content_type]
+    if len(arguments) > 0:
+      arg1 = arguments[0]
       if arg1.isdigit():
         arg1 = int(arg1)
         text_list = list(texts.keys())
@@ -454,19 +481,22 @@ def run_texts():
         else:
           text = texts[text_list[arg1]]
           print(f"running predictor on text: {text_list[arg1]}")
-          run_predictor(text, nsp_only=True, use_tokenizer=True)
-      elif arg1.lower() == 'all':
+          run_predictor(text)
+      elif arg1 == 'all':
         text_list = list(texts.keys())
         for txt in text_list:
           print(f"running predictor on text: {txt}")
-          run_predictor(texts[txt], nsp_only=True, use_tokenizer=True)
+          run_predictor(texts[txt])
           print()
       else:
         print(f"ERROR: {arg1} is not a valid text")
     else:
       print(f"ERROR: no text specified")
 
-run_texts()   
+if args["book"]: run_books()
+elif args["essay"]: run_texts("essays")
+elif args["poem"]: run_texts("poems")
+else: print(f"ERROR: no content specified to run program on") 
     
 end = time.time()
 seconds = end - start
