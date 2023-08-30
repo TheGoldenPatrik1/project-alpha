@@ -14,7 +14,7 @@ import gensim.downloader as vec_api
 vec_model = vec_api.load("fasttext-wiki-news-subwords-300")
 
 from numpy import False_
-from transformers import BertTokenizer, BertForMaskedLM, BertForNextSentencePrediction
+from transformers import BertTokenizer, BertForMaskedLM, BertForNextSentencePrediction, pipeline
 from torch.nn import functional as F
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
@@ -24,6 +24,7 @@ tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 model = BertForMaskedLM.from_pretrained('bert-base-uncased', return_dict=True)
 sentence_model = SentenceTransformer('bert-base-nli-mean-tokens')
 nsp_model = BertForNextSentencePrediction.from_pretrained('bert-base-uncased')
+generator = pipeline('text-generation', model="facebook/opt-2.7b")
 
 SEARCH_LIMIT = 30522
 result_list = ["with", "without", "only"]
@@ -283,16 +284,19 @@ def get_predictions(text, ignore_proper=False):
         proper_nouns.append(word.lower())
 
   for word in spl:
+    is_first = spl[0] == word
     word = re.search(r"[\w\-']+", word)
     if word != None and (ignore_proper == False or word.group(0).lower() not in proper_nouns):
       word = word.group(0)
       sentence = ""
+      input = ""
       for i in range(len(spl)):
+        input += f"{spl[i]} "
         if i == index:
           sentence += f"{spl[i].replace(word, '[MASK]')} "
         else:
           sentence += f"{spl[i]} "
-      res = pred_word(sentence.strip(), word.lower())
+      res = pred_word(sentence.strip(), word.lower(), None if is_first else input.strip())
       sentences[1] += res["pred_word"] + " "
       stats["with_stop"].add_item(res)
       if word.lower() not in stop_word_list:
