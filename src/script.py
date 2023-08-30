@@ -182,28 +182,36 @@ def print_word(
 def print_sep():
   print("--------------------------------------------------------------------------------------------------------------------------------------------------------------")
 
-def pred_word(txt, correct_word):
+def pred_word(txt, correct_word, generate_input):
   input = tokenizer.encode_plus(txt, return_tensors = "pt")
   if input['input_ids'].size(dim=1) > 512:
     print("error with giant sentence")
     return {
-      "result": "INCORRECT",
-      "similarity": 0,
-      "pred_word": "UNKNOWN"
+      "mask_result": "INCORRECT",
+      "mask_similarity": 0,
+      "mask_pred_word": "UNKNOWN",
+      "generate_result": "INCORRECT",
+      "generate_similarity": 0,
+      "generate_pred_word": "UNKNOWN"
     }
   mask_index = torch.where(input["input_ids"][0] == tokenizer.mask_token_id)
-  output = model(**input)
+  mask_output = model(**input)
+  generate_output = generator(generate_input)
+  generate_text = "REPLACE ME"
 
-  logits = output.logits
+  logits = mask_output.logits
   softmax = F.softmax(logits, dim = -1)
   try:
     mask_word = softmax[0, mask_index, :]
   except:
     print("error occurred with line 163")
     return {
-      "result": "INCORRECT",
-      "similarity": 0,
-      "pred_word": "UNKNOWN"
+      "mask_result": "INCORRECT",
+      "mask_similarity": 0,
+      "mask_pred_word": "UNKNOWN",
+      "generate_result": "INCORRECT",
+      "generate_similarity": 0,
+      "generate_pred_word": "UNKNOWN"
     }
   top = torch.topk(mask_word, SEARCH_LIMIT, dim = 1)[1][0]
   tokens = []
@@ -213,9 +221,9 @@ def pred_word(txt, correct_word):
       tokens.append(word)
       break
   if tokens[0] == correct_word:
-    result = "CORRECT"
+    mask_result = "CORRECT"
   else:
-    result = "INCORRECT"
+    mask_result = "INCORRECT"
   #try:
     #index = tokens.index(correct_word)
   #except:
@@ -224,9 +232,13 @@ def pred_word(txt, correct_word):
   #if index == "Not Found":
     #index = SEARCH_LIMIT
   try:
-    similarity = round(100 * float(vec_model.similarity(correct_word, tokens[0])), 2)
+    mask_similarity = round(100 * float(vec_model.similarity(correct_word, tokens[0])), 2)
   except:
-    similarity = "Not Found"
+    mask_similarity = "Not Found"
+  try:
+    generate_similarity = round(100 * float(vec_model.similarity(correct_word, generate_text)), 2)
+  except:
+    generate_similarity = "Not Found"
   #if index == 0:
     #category = 1
   #elif index == 1:
@@ -284,19 +296,19 @@ def get_predictions(text, ignore_proper=False):
         proper_nouns.append(word.lower())
 
   for word in spl:
-    is_first = spl[0] == word
     word = re.search(r"[\w\-']+", word)
     if word != None and (ignore_proper == False or word.group(0).lower() not in proper_nouns):
       word = word.group(0)
       sentence = ""
       input = ""
       for i in range(len(spl)):
-        input += f"{spl[i]} "
+        if i < index:
+          input += f"{spl[i]} "
         if i == index:
           sentence += f"{spl[i].replace(word, '[MASK]')} "
         else:
           sentence += f"{spl[i]} "
-      res = pred_word(sentence.strip(), word.lower(), None if is_first else input.strip())
+      res = pred_word(sentence.strip(), word.lower(), None if index == 0 else input.strip())
       sentences[1] += res["pred_word"] + " "
       stats["with_stop"].add_item(res)
       if word.lower() not in stop_word_list:
