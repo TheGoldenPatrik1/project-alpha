@@ -68,41 +68,56 @@ arguments = args["args"]
 class Stats:
   def __init__(self):
     self.data = {
-      "correct": 0,
-      "incorrect": 0,
+      "mask_correct": 0,
+      "mask_incorrect": 0,
       #"index_sum": 0,
       #"not_found": 0,
-      "similarity": 0,
+      "mask_similarity": 0,
       #"categories": [0, 0, 0, 0, 0, 0, 0],
-      "sentence_similarity": 0,
+      "generate_correct": 0,
+      "generate_incorrect": 0,
+      "generate_similarity": 0,
       #"similarities": [],
-      "incorrect_similarity": 0,
+      "mask_incorrect_similarity": 0,
+      "generate_incorrect_similarity": 0,
       "nsp_score": 0
     }
 
   def add_item(self, res):
-    if res["result"] == 'CORRECT':
-      self.data["correct"] += 1
+    if res["mask_result"] == 'CORRECT':
+      self.data["mask_correct"] += 1
     else:
-      self.data["incorrect"] += 1
-      if res["similarity"] != "Not Found":
-        self.data["incorrect_similarity"] += res["similarity"]
+      self.data["mask_incorrect"] += 1
+      if res["mask_similarity"] != "Not Found":
+        self.data["mask_incorrect_similarity"] += res["mask_similarity"]
+    if res["generate_result"] == 'CORRECT':
+      self.data["generate_correct"] += 1
+    else:
+      self.data["generate_incorrect"] += 1
+      if res["generate_similarity"] != "Not Found":
+        self.data["generate_incorrect_similarity"] += res["generate_similarity"]
     #if res["index"] == SEARCH_LIMIT:
       #self.data["not_found"] += 1
     #self.data["index_sum"] += res["index"]
-    if res["similarity"] != "Not Found":
-      self.data["similarity"] += res["similarity"]
+    if res["mask_similarity"] != "Not Found":
+      self.data["mask_similarity"] += res["mask_similarity"]
       #self.data["similarities"].append(res["similarity"])
+    if res["generate_similarity"] != "Not Found":
+      self.data["generate_similarity"] += res["generate_similarity"]
     #self.data["categories"][res["category"] - 1] += 1
   
   def add_obj(self, res):
-    self.data["correct"] += res["correct"]
-    self.data["incorrect"] += res["incorrect"]
+    self.data["mask_correct"] += res["mask_correct"]
+    self.data["mask_incorrect"] += res["mask_incorrect"]
     #self.data["index_sum"] += res["index_sum"]
     #self.data["not_found"] += res["not_found"]
-    self.data["similarity"] += res["similarity"]
-    self.data["incorrect_similarity"] += res["incorrect_similarity"]
+    self.data["mask_similarity"] += res["mask_similarity"]
+    self.data["mask_incorrect_similarity"] += res["mask_incorrect_similarity"]
     #self.data["similarities"] += res["similarities"]
+    self.data["generate_correct"] += res["generate_correct"]
+    self.data["generate_incorrect"] += res["generate_incorrect"]
+    self.data["generate_similarity"] += res["generate_similarity"]
+    self.data["generate_incorrect_similarity"] += res["generate_incorrect_similarity"]
     if res["sentence_similarity"] != 0:
       self.data["sentence_similarity"] += res["sentence_similarity"]
     if res["nsp_score"] != 0:
@@ -113,8 +128,8 @@ class Stats:
   def get_data(self):
     return self.data
   
-  def get_total(self):
-    return self.data["correct"] + self.data["incorrect"]
+  def get_total(self, type):
+    return self.data[f"{type}_correct"] + self.data[f"{type}_incorrect"]
   
   def get_sentence_similarity(self):
     return self.data["sentence_similarity"]
@@ -129,15 +144,27 @@ class Stats:
     self.data["nsp_score"] += nsp_score
   
   def print_data(self):
-    total = self.get_total()
-    print(f"\nCorrect Predictions   = {self.data['correct']} {get_percent(self.data['correct'], total)}")
-    print(f"Incorrect Predictions = {self.data['incorrect']} {get_percent(self.data['incorrect'], total)}")
+    total = self.get_total("mask")
+    print("Mask Word Results:")
+    print(f"\nCorrect Predictions   = {self.data['mask_correct']} {get_percent(self.data['mask_correct'], total)}")
+    print(f"Incorrect Predictions = {self.data['mask_incorrect']} {get_percent(self.data['mask_incorrect'], total)}")
     print(f"Total Predictions     = {total}")
     #print(f"\nAverage Index         = {round(self.data['index_sum'] / total, 1)}")
     #print(f"Indexes Not Found     = {self.data['not_found']} {get_percent(self.data['not_found'], total)}")
-    print(f"Average Similarity    = {round(self.data['similarity'] / total, 2)}")
-    if (self.data['incorrect'] != 0):
-      print(f"Incorrect Similarity  = {round(self.data['incorrect_similarity'] / self.data['incorrect'], 2)}\n")
+    print(f"Average Similarity    = {round(self.data['mask_similarity'] / total, 2)}")
+    if (self.data['mask_incorrect'] != 0):
+      print(f"Incorrect Similarity  = {round(self.data['mask_incorrect_similarity'] / self.data['mask_incorrect'], 2)}\n")
+
+    total = self.get_total("generate")
+    print("Generative Word Results:")
+    print(f"\nCorrect Predictions   = {self.data['generate_correct']} {get_percent(self.data['generate_correct'], total)}")
+    print(f"Incorrect Predictions = {self.data['generate_incorrect']} {get_percent(self.data['generate_incorrect'], total)}")
+    print(f"Total Predictions     = {total}")
+    #print(f"\nAverage Index         = {round(self.data['index_sum'] / total, 1)}")
+    #print(f"Indexes Not Found     = {self.data['not_found']} {get_percent(self.data['not_found'], total)}")
+    print(f"Average Similarity    = {round(self.data['generate_similarity'] / total, 2)}")
+    if (self.data['generate_incorrect'] != 0):
+      print(f"Incorrect Similarity  = {round(self.data['generate_incorrect_similarity'] / self.data['generate_incorrect'], 2)}\n")
 
     #plt.hist(self.data["similarities"], 10, (0, 100), color = 'green', histtype = 'bar', rwidth = 0.8)
     #plt.xlabel('Similarity Scores')
@@ -162,21 +189,27 @@ def pad_word(input_str, length):
 
 def print_word(
     masked_word="Masked Word",
-    predicted_word="Predicted Word",
-    prediction_result="Prediction Result",
+    mask_predicted_word="Mask Predicted Word",
+    mask_prediction_result="Mask Prediction Result",
     #correct_index="Index of Correct Word",
-    similarity="Similarity",
+    mask_similarity="Mask Similarity",
     top_predictions="Next Three Predictions",
     #prediction_category="Category",
+    generate_predicted_word="Generative Predicted Word",
+    generate_predicted_result="Generative Prediction Result",
+    generate_similarity="Generative Similarity",
     stop_word="Stop Word"
 ):
   print(f"| {pad_word(masked_word, 16)} ", end = '')
-  print(f"| {pad_word(predicted_word, 16)} ", end = '')
-  print(f"| {pad_word(prediction_result, 17)} ", end = '')
+  print(f"| {pad_word(mask_predicted_word, 21)} ", end = '')
+  print(f"| {pad_word(mask_prediction_result, 22)} ", end = '')
   #print(f"| {pad_word(correct_index, 21)} ", end = '')
-  print(f"| {pad_word(similarity, 10)} ", end = '')
+  print(f"| {pad_word(mask_similarity, 15)} ", end = '')
   print(f"| {pad_word(top_predictions, 36)} ", end = '')
   #print(f"| {pad_word(prediction_category, 8)} ", end = '')
+  print(f"| {pad_word(generate_predicted_word, 23} ", end='')
+  print(f"| {pad_word(generate_predicted_result, 25} ", end='')
+  print(f"| {pad_word(generate_similarity, 19} ", end='')
   print(f"| {pad_word(stop_word, 9)} |")
 
 def print_sep():
@@ -196,8 +229,22 @@ def pred_word(txt, correct_word, generate_input):
     }
   mask_index = torch.where(input["input_ids"][0] == tokenizer.mask_token_id)
   mask_output = model(**input)
-  generate_output = generator(generate_input)
-  generate_text = "REPLACE ME"
+
+  generate_text = "N/A"
+  generate_result = "UNKNOWN"
+  generate_similarity = -1
+  if generate_input != None:
+    generate_output = generator(generate_input)
+    generate_text = generate_output['generate_text']
+    # TODO: trim to one word
+    if generate_text == correct_word:
+      generate_result = "CORRECT"
+    else:
+      generate_result = "INCORRECT"
+    try:
+      generate_similarity = round(100 * float(vec_model.similarity(correct_word, generate_text)), 2)
+    except:
+      generate_similarity = "Not Found"
 
   logits = mask_output.logits
   softmax = F.softmax(logits, dim = -1)
@@ -235,10 +282,6 @@ def pred_word(txt, correct_word, generate_input):
     mask_similarity = round(100 * float(vec_model.similarity(correct_word, tokens[0])), 2)
   except:
     mask_similarity = "Not Found"
-  try:
-    generate_similarity = round(100 * float(vec_model.similarity(correct_word, generate_text)), 2)
-  except:
-    generate_similarity = "Not Found"
   #if index == 0:
     #category = 1
   #elif index == 1:
@@ -259,20 +302,26 @@ def pred_word(txt, correct_word, generate_input):
     is_stop = "FALSE"
   #print_word(
     #masked_word=correct_word,
-    #predicted_word=tokens[0],
-    #prediction_result=result,
+    #mask_predicted_word=tokens[0],
+    #mask_prediction_result=result,
     #correct_index=display_index,
-    #similarity=f"{similarity}",
+    #mask_similarity=f"{similarity}",
     #top_predictions=', '.join(tokens[1:4]),
     #prediction_category=f"{category}",
+    #generate_predicted_word=generate_text,
+    #generate_prediction_result=generate_result,
+    #generate_similarity=generate_similarity,
     #stop_word = is_stop
   #)
   return {
-      "result": result,
+      "mask_result": result,
       #"index": index,
-      "similarity": similarity,
+      "mask_similarity": similarity,
       #"category": category,
-      "pred_word": tokens[0]
+      "mask_pred_word": tokens[0],
+      "generate_result": generate_result,
+      "generate_similarity": generate_similarity,
+      "generate_pred_word": generate_text
   }
 
 def get_predictions(text, ignore_proper=False):
