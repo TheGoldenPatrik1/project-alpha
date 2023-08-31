@@ -88,13 +88,13 @@ class Stats:
   def add_item(self, res):
     if res["mask_result"] == 'CORRECT':
       self.data["mask_correct"] += 1
-    else:
+    elif res["mask_result"] == 'INCORRECT':
       self.data["mask_incorrect"] += 1
       if res["mask_similarity"] != "Not Found":
         self.data["mask_incorrect_similarity"] += res["mask_similarity"]
     if res["generate_result"] == 'CORRECT':
       self.data["generate_correct"] += 1
-    else:
+    elif res["generate_result"] == "INCORRECT":
       self.data["generate_incorrect"] += 1
       if res["generate_similarity"] != "Not Found":
         self.data["generate_incorrect_similarity"] += res["generate_similarity"]
@@ -210,7 +210,7 @@ def print_word(
   print(f"| {pad_word(top_predictions, 36)} ", end = '')
   #print(f"| {pad_word(prediction_category, 8)} ", end = '')
   print(f"| {pad_word(generate_predicted_word, 23)} ", end='')
-  print(f"| {pad_word(generate_predicted_result, 25)} ", end='')
+  print(f"| {pad_word(generate_prediction_result, 25)} ", end='')
   print(f"| {pad_word(generate_similarity, 19)} ", end='')
   print(f"| {pad_word(stop_word, 9)} |")
 
@@ -222,11 +222,11 @@ def pred_word(txt, correct_word, generate_input):
   if input['input_ids'].size(dim=1) > 512:
     print("error with giant sentence")
     return {
-      "mask_result": "INCORRECT",
-      "mask_similarity": 0,
+      "mask_result": "UNKNOWN",
+      "mask_similarity": "Not Found",
       "mask_pred_word": "UNKNOWN",
-      "generate_result": "INCORRECT",
-      "generate_similarity": 0,
+      "generate_result": "UNKNOWN",
+      "generate_similarity": "Not Found",
       "generate_pred_word": "UNKNOWN"
     }
   mask_index = torch.where(input["input_ids"][0] == tokenizer.mask_token_id)
@@ -259,11 +259,11 @@ def pred_word(txt, correct_word, generate_input):
   except:
     print("error occurred with line 163")
     return {
-      "mask_result": "INCORRECT",
-      "mask_similarity": 0,
+      "mask_result": "UNKNOWN",
+      "mask_similarity": "Not Found",
       "mask_pred_word": "UNKNOWN",
-      "generate_result": "INCORRECT",
-      "generate_similarity": 0,
+      "generate_result": "UNKNOWN",
+      "generate_similarity": "Not Found",
       "generate_pred_word": "UNKNOWN"
     }
   top = torch.topk(mask_word, SEARCH_LIMIT, dim = 1)[1][0]
