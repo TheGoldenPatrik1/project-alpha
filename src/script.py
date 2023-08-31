@@ -185,7 +185,7 @@ class Stats:
     #print(f"\nAverage Category      = {round(div, 1)} (~{categories_txt[round(div) - 1]})")
 
 def pad_word(input_str, length):
-  intput_str = f"{input_str}"
+  input_str = f"{input_str}"
   for x in range(length - len(input_str)):
     input_str += ' '
   return input_str
