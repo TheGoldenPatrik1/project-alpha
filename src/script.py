@@ -237,16 +237,20 @@ def pred_word(txt, correct_word, generate_input):
   generate_similarity = -1
   if generate_input != None:
     generate_output = generator(generate_input)
-    generate_text = generate_output['generate_text']
-    # TODO: trim to one word
-    if generate_text == correct_word:
-      generate_result = "CORRECT"
-    else:
-      generate_result = "INCORRECT"
-    try:
-      generate_similarity = round(100 * float(vec_model.similarity(correct_word, generate_text)), 2)
-    except:
-      generate_similarity = "Not Found"
+    generate_output = generate_output[0]['generated_text'].strip().split(generate_input)
+    if len(generate_output) > 1:
+      generate_output = generate_output[1].strip().split()[0].lower()
+      generate_output = re.search(r"[\w\-']+", generate_output)
+      if generate_output != None:
+        generate_text = generate_output.group(0)
+        if generate_text == correct_word:
+          generate_result = "CORRECT"
+        else:
+          generate_result = "INCORRECT"
+        try:
+          generate_similarity = round(100 * float(vec_model.similarity(correct_word, generate_text)), 2)
+        except:
+          generate_similarity = "Not Found"
 
   logits = mask_output.logits
   softmax = F.softmax(logits, dim = -1)
@@ -305,20 +309,20 @@ def pred_word(txt, correct_word, generate_input):
   print_word(
     masked_word=correct_word,
     mask_predicted_word=tokens[0],
-    mask_prediction_result=result,
-    correct_index=display_index,
-    mask_similarity=f"{similarity}",
-    top_predictions=', '.join(tokens[1:4]),
-    prediction_category=f"{category}",
+    mask_prediction_result=mask_result,
+    #correct_index=display_index,
+    mask_similarity=f"{mask_similarity}",
+    #top_predictions=', '.join(tokens[1:4]),
+    #prediction_category=f"{category}",
     generate_predicted_word=generate_text,
     generate_prediction_result=generate_result,
     generate_similarity=generate_similarity,
     stop_word = is_stop
   )
   return {
-      "mask_result": result,
+      "mask_result": mask_result,
       #"index": index,
-      "mask_similarity": similarity,
+      "mask_similarity": mask_similarity,
       #"category": category,
       "mask_pred_word": tokens[0],
       "generate_result": generate_result,
