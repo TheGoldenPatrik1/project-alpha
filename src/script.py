@@ -365,7 +365,7 @@ def get_predictions(text, ignore_proper=False):
         else:
           sentence += f"{spl[i]} "
       res = pred_word(sentence.strip(), word.lower(), None if index == 0 else input.strip())
-      sentences[1] += res["pred_word"] + " "
+      sentences[1] += res["mask_pred_word"] + " "
       stats["with_stop"].add_item(res)
       if word.lower() not in stop_word_list:
         stats["without_stop"].add_item(res)
