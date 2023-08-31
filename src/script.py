@@ -198,7 +198,7 @@ def print_word(
     top_predictions="Next Three Predictions",
     #prediction_category="Category",
     generate_predicted_word="Generative Predicted Word",
-    generate_predicted_result="Generative Prediction Result",
+    generate_prediction_result="Generative Prediction Result",
     generate_similarity="Generative Similarity",
     stop_word="Stop Word"
 ):
