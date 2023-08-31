@@ -207,9 +207,9 @@ def print_word(
   print(f"| {pad_word(mask_similarity, 15)} ", end = '')
   print(f"| {pad_word(top_predictions, 36)} ", end = '')
   #print(f"| {pad_word(prediction_category, 8)} ", end = '')
-  print(f"| {pad_word(generate_predicted_word, 23} ", end='')
-  print(f"| {pad_word(generate_predicted_result, 25} ", end='')
-  print(f"| {pad_word(generate_similarity, 19} ", end='')
+  print(f"| {pad_word(generate_predicted_word, 23)} ", end='')
+  print(f"| {pad_word(generate_predicted_result, 25)} ", end='')
+  print(f"| {pad_word(generate_similarity, 19)} ", end='')
   print(f"| {pad_word(stop_word, 9)} |")
 
 def print_sep():
@@ -300,19 +300,19 @@ def pred_word(txt, correct_word, generate_input):
     is_stop = "TRUE"
   else:
     is_stop = "FALSE"
-  #print_word(
-    #masked_word=correct_word,
-    #mask_predicted_word=tokens[0],
-    #mask_prediction_result=result,
-    #correct_index=display_index,
-    #mask_similarity=f"{similarity}",
-    #top_predictions=', '.join(tokens[1:4]),
-    #prediction_category=f"{category}",
-    #generate_predicted_word=generate_text,
-    #generate_prediction_result=generate_result,
-    #generate_similarity=generate_similarity,
-    #stop_word = is_stop
-  #)
+  print_word(
+    masked_word=correct_word,
+    mask_predicted_word=tokens[0],
+    mask_prediction_result=result,
+    correct_index=display_index,
+    mask_similarity=f"{similarity}",
+    top_predictions=', '.join(tokens[1:4]),
+    prediction_category=f"{category}",
+    generate_predicted_word=generate_text,
+    generate_prediction_result=generate_result,
+    generate_similarity=generate_similarity,
+    stop_word = is_stop
+  )
   return {
       "mask_result": result,
       #"index": index,
@@ -325,10 +325,10 @@ def pred_word(txt, correct_word, generate_input):
   }
 
 def get_predictions(text, ignore_proper=False):
-  #print(f"\nBeginning predictions on new sentence... <<<{text}>>>")
-  #print_sep()
-  #print_word()
-  #print_sep()
+  print(f"\nBeginning predictions on new sentence... <<<{text}>>>")
+  print_sep()
+  print_word()
+  print_sep()
   sentences = [text, ""]
   spl = text.split(" ")
   index = 0
@@ -372,8 +372,8 @@ def get_predictions(text, ignore_proper=False):
     [sentence_embeddings[1]]
   )[0][0]), 2)
   stats["with_stop"].add_sentence_similarity(sentence_similarity)
-  #print_sep()
-  #print(f"Sentence similarity score: {sentence_similarity}")
+  print_sep()
+  print(f"Sentence similarity score: {sentence_similarity}")
 
   return stats
 
