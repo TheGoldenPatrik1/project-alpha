@@ -185,6 +185,7 @@ class Stats:
     #print(f"\nAverage Category      = {round(div, 1)} (~{categories_txt[round(div) - 1]})")
 
 def pad_word(input_str, length):
+  intput_str = f"{input_str}"
   for x in range(length - len(input_str)):
     input_str += ' '
   return input_str
@@ -311,9 +312,9 @@ def pred_word(txt, correct_word, generate_input):
     mask_predicted_word=tokens[0],
     mask_prediction_result=mask_result,
     #correct_index=display_index,
-    mask_similarity=f"{mask_similarity}",
+    mask_similarity=mask_similarity,
     #top_predictions=', '.join(tokens[1:4]),
-    #prediction_category=f"{category}",
+    #prediction_category=category,
     generate_predicted_word=generate_text,
     generate_prediction_result=generate_result,
     generate_similarity=generate_similarity,
