@@ -62,6 +62,8 @@ def arg_parse():
       elif "poem" in arg: args["poem"] = True
     else:
       args["args"].append(arg)
+  return args
+
 args = arg_parse()
 arguments = args["args"]
 
