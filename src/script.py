@@ -82,7 +82,8 @@ class Stats:
       #"similarities": [],
       "mask_incorrect_similarity": 0,
       "generate_incorrect_similarity": 0,
-      "nsp_score": 0
+      "nsp_score": 0,
+      "sentence_similarity": 0
     }
 
   def add_item(self, res):
@@ -208,7 +209,7 @@ def print_word(
   print(f"| {pad_word(mask_prediction_result, 22)} ", end = '')
   #print(f"| {pad_word(correct_index, 21)} ", end = '')
   print(f"| {pad_word(mask_similarity, 15)} ", end = '')
-  print(f"| {pad_word(top_predictions, 36)} ", end = '')
+  #print(f"| {pad_word(top_predictions, 36)} ", end = '')
   #print(f"| {pad_word(prediction_category, 8)} ", end = '')
   print(f"| {pad_word(generate_predicted_word, 23)} ", end='')
   print(f"| {pad_word(generate_prediction_result, 25)} ", end='')
