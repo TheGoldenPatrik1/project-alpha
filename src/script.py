@@ -24,7 +24,7 @@ tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 model = BertForMaskedLM.from_pretrained('bert-base-uncased', return_dict=True)
 sentence_model = SentenceTransformer('bert-base-nli-mean-tokens')
 nsp_model = BertForNextSentencePrediction.from_pretrained('bert-base-uncased')
-generator = pipeline('text-generation', model="facebook/opt-2.7b")
+generator = pipeline('text-generation', model="facebook/opt-1.3b")
 
 SEARCH_LIMIT = 30522
 result_list = ["with", "without", "only"]
