@@ -167,7 +167,7 @@ class Stats:
     #print(f"Indexes Not Found     = {self.data['not_found']} {get_percent(self.data['not_found'], total)}")
     print(f"Average Similarity    = {round(self.data['generate_similarity'] / total, 2)}")
     if (self.data['generate_incorrect'] != 0):
-      print(f"Incorrect Similarity  = {round(self.data['generate_incorrect_similarity'] / self.data['generate_incorrect'], 2)}\n")
+      print(f"Incorrect Similarity  = {round(self.data['generate_incorrect_similarity'] / self.data['generate_incorrect'], 2)}")
 
     #plt.hist(self.data["similarities"], 10, (0, 100), color = 'green', histtype = 'bar', rwidth = 0.8)
     #plt.xlabel('Similarity Scores')
@@ -211,13 +211,13 @@ def print_word(
   print(f"| {pad_word(mask_similarity, 15)} ", end = '')
   #print(f"| {pad_word(top_predictions, 36)} ", end = '')
   #print(f"| {pad_word(prediction_category, 8)} ", end = '')
-  print(f"| {pad_word(generate_predicted_word, 23)} ", end='')
-  print(f"| {pad_word(generate_prediction_result, 25)} ", end='')
-  print(f"| {pad_word(generate_similarity, 19)} ", end='')
+  print(f"| {pad_word(generate_predicted_word, 25)} ", end='')
+  print(f"| {pad_word(generate_prediction_result, 28)} ", end='')
+  print(f"| {pad_word(generate_similarity, 21)} ", end='')
   print(f"| {pad_word(stop_word, 9)} |")
 
 def print_sep():
-  print("--------------------------------------------------------------------------------------------------------------------------------------------------------------")
+  print("--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------")
 
 def pred_word(txt, correct_word, generate_input):
   input = tokenizer.encode_plus(txt, return_tensors = "pt")
@@ -455,6 +455,7 @@ def run_predictor(input_txt, data=False):
     full_total = stats["with_stop"].get_total("mask")
     print(f"\nResults for {word.upper()} stop words...")
     print(f"{partial_total}/{full_total} {get_percent(partial_total, full_total)}")
+    print()
     stats_obj.print_data()
     print()
     print_sep()
