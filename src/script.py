@@ -241,14 +241,12 @@ def pred_word(txt, correct_word, generate_input):
     generate_output = generator(generate_input)
     generate_output = generate_output[0]['generated_text'].strip().split(generate_input)
     if len(generate_output) > 1:
-      generate_output = generate_output[1].strip().split()[0].lower()
+      generate_output = generate_output[1].strip().split()
+      generate_output = generate_output[0].lower() if len(generate_output) > 0 else ""
       generate_output = re.search(r"[\w\-']+", generate_output)
       if generate_output != None:
         generate_text = generate_output.group(0)
-        if generate_text == correct_word:
-          generate_result = "CORRECT"
-        else:
-          generate_result = "INCORRECT"
+        generate_result = "CORRECT" if generate_text == correct_word else "INCORRECT"
         try:
           generate_similarity = round(100 * float(vec_model.similarity(correct_word, generate_text)), 2)
         except:
@@ -275,10 +273,7 @@ def pred_word(txt, correct_word, generate_input):
     if re.search(r'^\W+$', word) == None:
       tokens.append(word)
       break
-  if tokens[0] == correct_word:
-    mask_result = "CORRECT"
-  else:
-    mask_result = "INCORRECT"
+  mask_result = "CORRECT" if tokens[0] == correct_word else "INCORRECT"
   #try:
     #index = tokens.index(correct_word)
   #except:
@@ -304,10 +299,7 @@ def pred_word(txt, correct_word, generate_input):
     #category = 6
   #else:
     #category = 7
-  if correct_word in stop_word_list:
-    is_stop = "TRUE"
-  else:
-    is_stop = "FALSE"
+  is_stop = "TRUE" if correct_word in stop_word_list else "FALSE"
   print_word(
     masked_word=correct_word,
     mask_predicted_word=tokens[0],
