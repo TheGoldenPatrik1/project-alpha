@@ -451,8 +451,8 @@ def run_predictor(input_txt, data=False):
   for word in result_list:
     stats_obj = stats[f"{word}_stop"]
     total_obj[f"{word}_stop"] = stats_obj.get_data()
-    partial_total = stats_obj.get_total()
-    full_total = stats["with_stop"].get_total()
+    partial_total = stats_obj.get_total("mask")
+    full_total = stats["with_stop"].get_total("mask")
     print(f"\nResults for {word.upper()} stop words...")
     print(f"{partial_total}/{full_total} {get_percent(partial_total, full_total)}")
     stats_obj.print_data()
