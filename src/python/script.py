@@ -384,7 +384,7 @@ def get_book(selection):
   run_predictor(book, data=selection)
 
 def run_books():
-  with open('./files/books.txt') as f:
+  with open('../files/books.txt') as f:
     books = json.load(f)
     book_list = list(books.keys())
     if len(arguments) > 0:
@@ -406,7 +406,7 @@ def run_books():
       print(f"ERROR: no book specified")
     
 def run_texts(content_type):
-  with open('./files/texts.txt') as f:
+  with open('../files/texts.txt') as f:
     content = json.load(f)
     texts = content[content_type]
     if len(arguments) > 0:
