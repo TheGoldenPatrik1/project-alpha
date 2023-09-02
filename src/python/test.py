@@ -2,12 +2,12 @@ import sys
 import json
 
 def get_file(file_name):
-  with open(f'../files/{file_name}.txt') as f:
+  with open(f'./files/{file_name}.txt') as f:
     data = json.load(f)
     return data
 
 def set_file(file_name, data):
-  f = open(f'../files/{file_name}.txt', 'w')
+  f = open(f'./files/{file_name}.txt', 'w')
   data = json.dumps(data, indent=2)
   f.write(data)
   f.close()
