@@ -38,6 +38,7 @@ nltk.download('punkt')
 nltk.download('averaged_perceptron_tagger')
 
 from stats import Stats
+import formatters
 
 def arg_parse():
   args = {
@@ -69,12 +70,6 @@ def arg_parse():
 args = arg_parse()
 arguments = args["args"]
 
-def pad_word(input_str, length):
-  input_str = f"{input_str}"
-  for x in range(length - len(input_str)):
-    input_str += ' '
-  return input_str
-
 def print_word(
     masked_word="Masked Word",
     mask_predicted_word="Mask Predicted Word",
@@ -88,17 +83,17 @@ def print_word(
     generate_similarity="Generative Similarity",
     stop_word="Stop Word"
 ):
-  print(f"| {pad_word(masked_word, 16)} ", end = '')
-  print(f"| {pad_word(mask_predicted_word, 21)} ", end = '')
-  print(f"| {pad_word(mask_prediction_result, 22)} ", end = '')
-  #print(f"| {pad_word(correct_index, 21)} ", end = '')
-  print(f"| {pad_word(mask_similarity, 15)} ", end = '')
-  #print(f"| {pad_word(top_predictions, 36)} ", end = '')
-  #print(f"| {pad_word(prediction_category, 8)} ", end = '')
-  print(f"| {pad_word(generate_predicted_word, 25)} ", end='')
-  print(f"| {pad_word(generate_prediction_result, 28)} ", end='')
-  print(f"| {pad_word(generate_similarity, 21)} ", end='')
-  print(f"| {pad_word(stop_word, 9)} |")
+  print(f"| {formatters.pad_word(masked_word, 16)} ", end = '')
+  print(f"| {formatters.pad_word(mask_predicted_word, 21)} ", end = '')
+  print(f"| {formatters.pad_word(mask_prediction_result, 22)} ", end = '')
+  #print(f"| {formatters.pad_word(correct_index, 21)} ", end = '')
+  print(f"| {formatters.pad_word(mask_similarity, 15)} ", end = '')
+  #print(f"| {formatters.pad_word(top_predictions, 36)} ", end = '')
+  #print(f"| {formatters.pad_word(prediction_category, 8)} ", end = '')
+  print(f"| {formatters.pad_word(generate_predicted_word, 25)} ", end='')
+  print(f"| {formatters.pad_word(generate_prediction_result, 28)} ", end='')
+  print(f"| {formatters.pad_word(generate_similarity, 21)} ", end='')
+  print(f"| {formatters.pad_word(stop_word, 9)} |")
 
 def print_sep():
   print("--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------")
@@ -261,12 +256,6 @@ def get_predictions(text, ignore_proper=False):
 
   return stats
 
-def get_percent(part, whole):
-  if part == 0:
-    return ""
-  else:
-    return f"({round((part / whole) * 100, 1)}%)"
-
 def get_nsp(sentences):
   total_score = 0
   total_count = 0
@@ -338,7 +327,7 @@ def run_predictor(input_txt, data=False):
     partial_total = stats_obj.get_total("mask")
     full_total = stats["with_stop"].get_total("mask")
     print(f"\nResults for {word.upper()} stop words...")
-    print(f"{partial_total}/{full_total} {get_percent(partial_total, full_total)}")
+    print(f"{partial_total}/{full_total} {formatters.get_percent(partial_total, full_total)}")
     print()
     stats_obj.print_data()
     print()
