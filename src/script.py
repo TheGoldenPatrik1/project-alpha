@@ -236,7 +236,7 @@ def pred_word(txt, correct_word, generate_input):
 
   generate_text = "N/A"
   generate_result = "UNKNOWN"
-  generate_similarity = -1
+  generate_similarity = "Not Found"
   if generate_input != None:
     generate_output = generator(generate_input)
     generate_output = generate_output[0]['generated_text'].strip().split(generate_input)
