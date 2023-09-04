@@ -9,7 +9,6 @@ import sys
 
 start = time.time()
 
-from gensim.models import Word2Vec
 import gensim.downloader as vec_api
 vec_model = vec_api.load("fasttext-wiki-news-subwords-300")
 
@@ -18,7 +17,6 @@ from transformers import BertTokenizer, BertForMaskedLM, BertForNextSentencePred
 from torch.nn import functional as F
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
-import matplotlib.pyplot as plt
 
 tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 model = BertForMaskedLM.from_pretrained('bert-base-uncased', return_dict=True)
@@ -76,7 +74,7 @@ def print_word(
     mask_prediction_result="Mask Prediction Result",
     #correct_index="Index of Correct Word",
     mask_similarity="Mask Similarity",
-    top_predictions="Next Three Predictions",
+    #top_predictions="Next Three Predictions",
     #prediction_category="Category",
     generate_predicted_word="Generative Predicted Word",
     generate_prediction_result="Generative Prediction Result",
@@ -99,8 +97,8 @@ def print_sep():
   print("--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------")
 
 def pred_word(txt, correct_word, generate_input):
-  input = tokenizer.encode_plus(txt, return_tensors = "pt")
-  if input['input_ids'].size(dim=1) > 512:
+  tokenized = tokenizer.encode_plus(txt, return_tensors = "pt")
+  if tokenized['input_ids'].size(dim=1) > 512:
     print("error with giant sentence")
     return {
       "mask_result": "UNKNOWN",
@@ -110,8 +108,8 @@ def pred_word(txt, correct_word, generate_input):
       "generate_similarity": "Not Found",
       "generate_pred_word": "UNKNOWN"
     }
-  mask_index = torch.where(input["input_ids"][0] == tokenizer.mask_token_id)
-  mask_output = model(**input)
+  mask_index = torch.where(tokenized["input_ids"][0] == tokenizer.mask_token_id)
+  mask_output = model(**tokenized)
 
   generate_text = "N/A"
   generate_result = "UNKNOWN"
@@ -228,15 +226,15 @@ def get_predictions(text, ignore_proper=False):
     if word != None and (ignore_proper == False or word.group(0).lower() not in proper_nouns):
       word = word.group(0)
       sentence = ""
-      input = ""
+      generate_input = ""
       for i in range(len(spl)):
         if i < index:
-          input += f"{spl[i]} "
+          generate_input += f"{spl[i]} "
         if i == index:
           sentence += f"{spl[i].replace(word, '[MASK]')} "
         else:
           sentence += f"{spl[i]} "
-      res = pred_word(sentence.strip(), word.lower(), None if index == 0 else input.strip())
+      res = pred_word(sentence.strip(), word.lower(), None if index == 0 else generate_input.strip())
       sentences[1] += res["mask_pred_word"] + " "
       stats["with_stop"].add_item(res)
       if word.lower() not in stop_word_list:
@@ -333,7 +331,7 @@ def run_predictor(input_txt, data=False):
     print()
     print_sep()
   
-  print(f"\nResults for sentences...\n")
+  print("\nResults for sentences...\n")
   print(f"Number of Sentences   = {sentence_counter}")
   print(f"Average Similarity    = {round(stats['with_stop'].get_sentence_similarity() / sentence_counter, 2)}")
   if sentence_counter > 1:
@@ -403,7 +401,7 @@ def run_books():
         else:
           print(f"ERROR: {arg1} is not in book list")
     else:
-      print(f"ERROR: no book specified")
+      print("ERROR: no book specified")
     
 def run_texts(content_type):
   with open('./files/texts.txt') as f:
@@ -430,12 +428,12 @@ def run_texts(content_type):
       else:
         print(f"ERROR: {arg1} is not a valid text")
     else:
-      print(f"ERROR: no text specified")
+      print("ERROR: no text specified")
 
 if args["book"]: run_books()
 elif args["essay"]: run_texts("essays")
 elif args["poem"]: run_texts("poems")
-else: print(f"ERROR: no content specified to run program on") 
+else: print("ERROR: no content specified to run program on") 
     
 end = time.time()
 seconds = end - start

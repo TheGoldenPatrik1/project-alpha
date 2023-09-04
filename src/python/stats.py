@@ -1,4 +1,5 @@
 import formatters
+#import matplotlib.pyplot as plt
 
 class Stats:
   def __init__(self):
