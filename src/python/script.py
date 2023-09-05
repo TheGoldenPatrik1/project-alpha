@@ -117,7 +117,9 @@ def pred_word(txt, correct_word, generate_input):
   generate_result = "UNKNOWN"
   generate_similarity = "Not Found"
   if generate_input != None:
-    generate_output = generator(generate_input)
+    generate_length = len(generate_input.split())
+    generate_length += math.ceil(generate_length / 4)
+    generate_output = generator(generate_input, max_length=generate_length)
     generate_output = generate_output[0]['generated_text'].strip().split(generate_input)
     if len(generate_output) > 1:
       generate_output = generate_output[1].strip().split()
