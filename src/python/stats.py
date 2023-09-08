@@ -17,7 +17,8 @@ class Stats:
       "mask_incorrect_similarity": 0,
       "generate_incorrect_similarity": 0,
       "nsp_score": 0,
-      "sentence_similarity": 0
+      "sentence_similarity": 0,
+      "is_top_10": 0
     }
 
   def add_item(self, res):
@@ -42,6 +43,8 @@ class Stats:
     if res["generate_similarity"] != "Not Found":
       self.data["generate_similarity"] += res["generate_similarity"]
     #self.data["categories"][res["category"] - 1] += 1
+    if res["is_top_10"] == True:
+      self.data["is_top_10"] += 1
   
   def add_obj(self, res):
     self.data["mask_correct"] += res["mask_correct"]
@@ -55,12 +58,11 @@ class Stats:
     self.data["generate_incorrect"] += res["generate_incorrect"]
     self.data["generate_similarity"] += res["generate_similarity"]
     self.data["generate_incorrect_similarity"] += res["generate_incorrect_similarity"]
-    if res["sentence_similarity"] != 0:
-      self.data["sentence_similarity"] += res["sentence_similarity"]
-    if res["nsp_score"] != 0:
-      self.data["nsp_score"] += res["nsp_score"]
+    self.data["sentence_similarity"] += res["sentence_similarity"]
+    self.data["nsp_score"] += res["nsp_score"]
     #for i in range(len(res["categories"])):
       #self.data["categories"][i] += res["categories"][i]
+    self.data["is_top_10"] += res["is_top_10"]
 
   def get_data(self):
     return self.data
@@ -90,10 +92,11 @@ class Stats:
     #print(f"Indexes Not Found     = {self.data['not_found']} {formatters.get_percent(self.data['not_found'], total)}")
     print(f"Average Similarity    = {round(self.data['mask_similarity'] / total, 2)}")
     if (self.data['mask_incorrect'] != 0):
-      print(f"Incorrect Similarity  = {round(self.data['mask_incorrect_similarity'] / self.data['mask_incorrect'], 2)}\n")
+      print(f"Incorrect Similarity  = {round(self.data['mask_incorrect_similarity'] / self.data['mask_incorrect'], 2)}")
+    print(f"Top 10 Predictions    = {self.data['is_top_10']} {formatters.get_percent(self.data['is_top_10'], total)}")
 
     total = self.get_total("generate")
-    print("Generative Word Results:")
+    print("\nGenerative Word Results:")
     print(f"\nCorrect Predictions   = {self.data['generate_correct']} {formatters.get_percent(self.data['generate_correct'], total)}")
     print(f"Incorrect Predictions = {self.data['generate_incorrect']} {formatters.get_percent(self.data['generate_incorrect'], total)}")
     print(f"Total Predictions     = {total}")

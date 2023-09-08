@@ -117,8 +117,7 @@ def pred_word(txt, correct_word, generate_input):
   generate_result = "UNKNOWN"
   generate_similarity = "Not Found"
   if generate_input != None:
-    generate_length = len(generate_input.split())
-    generate_length += math.ceil(generate_length / 4)
+    generate_length = (len(generate_input.split()) * 2) + 5
     generate_output = generator(generate_input, max_length=generate_length)
     generate_output = generate_output[0]['generated_text'].strip().split(generate_input)
     if len(generate_output) > 1:
@@ -155,6 +154,7 @@ def pred_word(txt, correct_word, generate_input):
       tokens.append(word)
       break
   mask_result = "CORRECT" if tokens[0] == correct_word else "INCORRECT"
+  is_top_10 = correct_word in tokens[:10]
   #try:
     #index = tokens.index(correct_word)
   #except:
@@ -203,7 +203,8 @@ def pred_word(txt, correct_word, generate_input):
       "mask_pred_word": tokens[0],
       "generate_result": generate_result,
       "generate_similarity": generate_similarity,
-      "generate_pred_word": generate_text
+      "generate_pred_word": generate_text,
+      "is_top_10": is_top_10
   }
 
 def get_predictions(text, ignore_proper=False):
