@@ -441,7 +441,7 @@ def run_texts(content_type):
 if args["book"]: run_books()
 elif args["essay"]: run_texts("essays")
 elif args["poem"]: run_texts("poems")
-else: print("ERROR: no content specified to run program on") 
+else: print("ERROR: no content specified to run program on. Full list of args:\n-token\n-sent\n-ignore / -proper\n-nsp\n-book\n-poem\n-logs") 
     
 end = time.time()
 seconds = end - start
