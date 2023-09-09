@@ -4,30 +4,17 @@ import re
 import torch
 
 import gensim.downloader as vec_api
-vec_model = vec_api.load("fasttext-wiki-news-subwords-300")
-
 from numpy import False_
 from transformers import BertTokenizer, BertForMaskedLM, BertForNextSentencePrediction, pipeline
 from torch.nn import functional as F
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 
-tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
-model = BertForMaskedLM.from_pretrained('bert-base-uncased', return_dict=True)
-sentence_model = SentenceTransformer('bert-base-nli-mean-tokens')
-nsp_model = BertForNextSentencePrediction.from_pretrained('bert-base-uncased')
-generator = pipeline('text-generation', model="facebook/opt-1.3b")
-
 SEARCH_LIMIT = 30522
 result_list = ["with", "without", "only"]
 
-nltk.download('stopwords')
 from nltk.corpus import stopwords
-stop_word_list = set(stopwords.words('english'))
-
 from nltk.tokenize import word_tokenize, sent_tokenize
-nltk.download('punkt')
-nltk.download('averaged_perceptron_tagger')
 
 from stats import Stats
 import formatters
@@ -37,8 +24,21 @@ class Predictor:
     self.args = args
     self.arguments = self.args['args']
 
+    self.vec_model = vec_api.load("fasttext-wiki-news-subwords-300")
+    self.tokenizer = BertTokenizer.from_pretrained('bert-large-uncased')
+    self.model = BertForMaskedLM.from_pretrained('bert-large-uncased', return_dict=True)
+    self.sentence_model = SentenceTransformer('bert-large-nli-mean-tokens')
+    self.nsp_model = BertForNextSentencePrediction.from_pretrained('bert-large-uncased')
+    self.generator = pipeline('text-generation', model="facebook/opt-1.3b")
+
+    self.stop_word_list = set(stopwords.words('english'))
+
+    nltk.download('stopwords')
+    nltk.download('punkt')
+    nltk.download('averaged_perceptron_tagger')
+
   def pred_word(self, txt, correct_word, generate_input):
-    tokenized = tokenizer.encode_plus(txt, return_tensors = "pt")
+    tokenized = self.tokenizer.encode_plus(txt, return_tensors = "pt")
     if tokenized['input_ids'].size(dim=1) > 512:
       print("error with giant sentence")
       return {
@@ -49,15 +49,15 @@ class Predictor:
         "generate_similarity": "Not Found",
         "generate_pred_word": "UNKNOWN"
       }
-    mask_index = torch.where(tokenized["input_ids"][0] == tokenizer.mask_token_id)
-    mask_output = model(**tokenized)
+    mask_index = torch.where(tokenized["input_ids"][0] == self.tokenizer.mask_token_id)
+    mask_output = self.model(**tokenized)
 
     generate_text = "N/A"
     generate_result = "UNKNOWN"
     generate_similarity = "Not Found"
     if generate_input != None:
       generate_length = (len(generate_input.split()) * 2) + 5
-      generate_output = generator(generate_input, max_length=generate_length)
+      generate_output = self.generator(generate_input, max_length=generate_length)
       generate_output = generate_output[0]['generated_text'].strip().split(generate_input)
       if len(generate_output) > 1:
         generate_output = generate_output[1].strip().split()
@@ -67,7 +67,7 @@ class Predictor:
           generate_text = generate_output.group(0)
           generate_result = "CORRECT" if generate_text == correct_word else "INCORRECT"
           try:
-            generate_similarity = round(100 * float(vec_model.similarity(correct_word, generate_text)), 2)
+            generate_similarity = round(100 * float(self.vec_model.similarity(correct_word, generate_text)), 2)
           except:
             generate_similarity = "Not Found"
 
@@ -88,12 +88,13 @@ class Predictor:
     top = torch.topk(mask_word, SEARCH_LIMIT, dim = 1)[1][0]
     tokens = []
     for token in top:
-      word = tokenizer.decode([token])
+      word = self.tokenizer.decode([token])
       if re.search(r'^\W+$', word) == None:
         tokens.append(word)
-        break
+        if len(tokens) == 10:
+          break
     mask_result = "CORRECT" if tokens[0] == correct_word else "INCORRECT"
-    is_top_10 = correct_word in tokens[:10]
+    is_top_10 = correct_word in tokens
     #try:
       #index = tokens.index(correct_word)
     #except:
@@ -102,7 +103,7 @@ class Predictor:
     #if index == "Not Found":
       #index = SEARCH_LIMIT
     try:
-      mask_similarity = round(100 * float(vec_model.similarity(correct_word, tokens[0])), 2)
+      mask_similarity = round(100 * float(self.vec_model.similarity(correct_word, tokens[0])), 2)
     except:
       mask_similarity = "Not Found"
     #if index == 0:
@@ -119,7 +120,7 @@ class Predictor:
       #category = 6
     #else:
       #category = 7
-    is_stop = "TRUE" if correct_word in stop_word_list else "FALSE"
+    is_stop = "TRUE" if correct_word in self.stop_word_list else "FALSE"
     if self.args["logs"] == True:
       formatters.print_word(
         masked_word=correct_word,
@@ -183,13 +184,13 @@ class Predictor:
         res = self.pred_word(sentence.strip(), word.lower(), None if index == 0 else generate_input.strip())
         sentences[1] += res["mask_pred_word"] + " "
         stats["with_stop"].add_item(res)
-        if word.lower() not in stop_word_list:
+        if word.lower() not in self.stop_word_list:
           stats["without_stop"].add_item(res)
         else:
           stats["only_stop"].add_item(res)
       index += 1
     
-    sentence_embeddings = sentence_model.encode(sentences)
+    sentence_embeddings = self.sentence_model.encode(sentences)
     sentence_similarity = round(100 * float(cosine_similarity(
       [sentence_embeddings[0]],
       [sentence_embeddings[1]]
@@ -212,10 +213,10 @@ class Predictor:
       for next_sentence in sentences:
         if sentence == next_sentence:
           continue
-        encoding = tokenizer.encode_plus(sentence, next_sentence, return_tensors='pt')
+        encoding = self.tokenizer.encode_plus(sentence, next_sentence, return_tensors='pt')
         if encoding['input_ids'].size(dim=1) > 512:
           continue
-        outputs = nsp_model(**encoding)[0]
+        outputs = self.nsp_model(**encoding)[0]
         softmax = F.softmax(outputs, dim = 1)
         total_score += round(float(softmax[0][0].item()) * 100, 2)
         total_count += 1
@@ -252,10 +253,10 @@ class Predictor:
       for word in result_list:
         stats[f"{word}_stop"].add_obj(res[f"{word}_stop"].get_data())
       if len(sentences) > 1 and sentence_counter < (len(sentences)):
-        encoding = tokenizer.encode_plus(sentences[sentence_counter - 1], sentences[sentence_counter], return_tensors='pt')
+        encoding = self.tokenizer.encode_plus(sentences[sentence_counter - 1], sentences[sentence_counter], return_tensors='pt')
         if encoding['input_ids'].size(dim=1) > 512:
           continue
-        outputs = nsp_model(**encoding)[0]
+        outputs = self.nsp_model(**encoding)[0]
         softmax = F.softmax(outputs, dim = 1)
         score = round(float(softmax[0][0].item()) * 100, 2)
         #if (score > 10 and score < 90):
