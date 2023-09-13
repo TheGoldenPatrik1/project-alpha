@@ -121,7 +121,7 @@ class Predictor:
     #else:
       #category = 7
     is_stop = "TRUE" if correct_word in self.stop_word_list else "FALSE"
-    if self.args["logs"] == True:
+    if self.args["logs"]:
       formatters.print_word(
         masked_word=correct_word,
         mask_predicted_word=tokens[0],
@@ -147,8 +147,8 @@ class Predictor:
         "is_top_10": is_top_10
     }
 
-  def get_predictions(self, text, ignore_proper=False):
-    if self.args["logs"] == True:
+  def get_predictions(self, text, total_text):
+    if self.args["logs"]:
       print(f"\nBeginning predictions on new sentence... <<<{text}>>>")
       formatters.print_sep()
       formatters.print_word()
@@ -161,7 +161,7 @@ class Predictor:
       stats[f"{word}_stop"] = Stats()
     
     proper_nouns = []
-    if ignore_proper:
+    if self.args["ignore_proper"]:
       words = nltk.word_tokenize(text)
       tagged = nltk.pos_tag(words)
       for (word, tag) in tagged:
@@ -170,7 +170,7 @@ class Predictor:
 
     for word in spl:
       word = re.search(r"[\w\-']+", word)
-      if word != None and (ignore_proper == False or word.group(0).lower() not in proper_nouns):
+      if word != None and (self.args["ignore_proper"] == False or word.group(0).lower() not in proper_nouns):
         word = word.group(0)
         sentence = ""
         generate_input = ""
@@ -181,7 +181,7 @@ class Predictor:
             sentence += f"{spl[i].replace(word, '[MASK]')} "
           else:
             sentence += f"{spl[i]} "
-        res = self.pred_word(sentence.strip(), word.lower(), None if index == 0 else generate_input.strip())
+        res = self.pred_word(sentence.strip(), word.lower(), None if len(total_text) == 0 and index == 0 else f"{total_text} {generate_input}".strip())
         sentences[1] += res["mask_pred_word"] + " "
         stats["with_stop"].add_item(res)
         if word.lower() not in self.stop_word_list:
@@ -196,7 +196,7 @@ class Predictor:
       [sentence_embeddings[1]]
     )[0][0]), 2)
     stats["with_stop"].add_sentence_similarity(sentence_similarity)
-    if self.args["logs"] == True:
+    if self.args["logs"]:
       formatters.print_sep()
       print(f"Sentence similarity score: {sentence_similarity}")
 
@@ -244,12 +244,15 @@ class Predictor:
       return self.get_nsp(sentences)
       
     sentence_counter = 0
+    total_text = ""
     #score_counter = 0
     for sentence in sentences:
       if len(sentence.strip()) == 0:
         continue
       sentence_counter += 1
-      res = self.get_predictions(sentence.strip(), self.args["ignore_proper"])
+      res = self.get_predictions(sentence.strip(), total_text)
+      if self.args["full_input"]:
+        total_text = f"{total_text} {sentence}".strip()
       for word in result_list:
         stats[f"{word}_stop"].add_obj(res[f"{word}_stop"].get_data())
       if len(sentences) > 1 and sentence_counter < (len(sentences)):

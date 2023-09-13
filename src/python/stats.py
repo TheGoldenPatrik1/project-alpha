@@ -43,7 +43,7 @@ class Stats:
     if res["generate_similarity"] != "Not Found":
       self.data["generate_similarity"] += res["generate_similarity"]
     #self.data["categories"][res["category"] - 1] += 1
-    if res["is_top_10"] == True:
+    if res["is_top_10"]:
       self.data["is_top_10"] += 1
   
   def add_obj(self, res):

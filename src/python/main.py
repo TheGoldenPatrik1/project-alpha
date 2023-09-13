@@ -19,7 +19,8 @@ def arg_parse():
     "book": False,
     "essay": False,
     "poem": False,
-    "logs": False
+    "logs": False,
+    "full_input": False
   }
   if len(sys.argv) == 1: return args
   sys.argv.pop(0)
@@ -34,6 +35,7 @@ def arg_parse():
       elif "essay" in arg: args["essay"] = True
       elif "poem" in arg: args["poem"] = True
       elif "logs" in arg: args["logs"] = True
+      elif "full" in arg: args["full_input"] = True
     else:
       args["args"].append(arg)
   return args
@@ -122,7 +124,7 @@ def run_texts(content_type):
 if args["book"]: run_books()
 elif args["essay"]: run_texts("essays")
 elif args["poem"]: run_texts("poems")
-else: print("ERROR: no content specified to run program on. Full list of args:\n-token\n-sent\n-ignore / -proper\n-nsp\n-book\n-poem\n-essay\n-logs") 
+else: print("ERROR: no content specified to run program on. Full list of args:\n-token\n-sent\n-ignore / -proper\n-nsp\n-book\n-poem\n-essay\n-logs\n-full") 
     
 end = time.time()
 seconds = end - start
