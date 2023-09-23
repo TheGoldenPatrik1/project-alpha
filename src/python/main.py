@@ -109,13 +109,32 @@ def run_texts(content_type):
         else:
           text = texts[text_list[arg1]]
           print(f"running predictor on text: {text_list[arg1]}")
-          pred.run_predictor(text)
+          metadata_split = text_list[arg1].split(", ")
+          metadata = {
+            "type": content_type,
+            "title": metadata_split[1],
+            "author": metadata_split[0],
+            "publish": ""
+          }
+          pred.run_predictor(text, data=metadata)
       elif arg1 == 'all':
         text_list = list(texts.keys())
+        master_result = []
         for txt in text_list:
           print(f"running predictor on text: {txt}")
-          pred.run_predictor(texts[txt])
+          metadata_split = txt.split(", ")
+          metadata = {
+            "type": content_type,
+            "title": metadata_split[1],
+            "author": metadata_split[0],
+            "publish": ""
+          }
+          result = pred.run_predictor(texts[txt], data=metadata)
+          master_result.append(result)
           print()
+        print("Complete results array:\n")
+        print(json.dumps(master_result, indent=4))
+        print()
       else:
         print(f"ERROR: {arg1} is not a valid text")
     else:

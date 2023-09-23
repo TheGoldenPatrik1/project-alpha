@@ -305,3 +305,5 @@ class Predictor:
       total_obj["metadata"]["publish"] = data["publish"]
     
     print(json.dumps(total_obj, indent=4))
+
+    return total_obj
