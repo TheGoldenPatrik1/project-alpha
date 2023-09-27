@@ -55,7 +55,7 @@ class Predictor:
     generate_text = "N/A"
     generate_result = "UNKNOWN"
     generate_similarity = "Not Found"
-    if generate_input != None:
+    if generate_input != None and len(generate_input) > 0:
       generate_length = (len(generate_input.split()) * 2) + 5
       generate_output = self.generator(generate_input, max_length=generate_length)
       generate_output = generate_output[0]['generated_text'].strip().split(generate_input)
@@ -147,7 +147,7 @@ class Predictor:
         "is_top_10": is_top_10
     }
 
-  def get_predictions(self, text, total_text):
+  def get_predictions(self, text, sentence_list, title_sentence=False):
     if self.args["logs"]:
       print(f"\nBeginning predictions on new sentence... <<<{text}>>>")
       formatters.print_sep()
@@ -181,7 +181,16 @@ class Predictor:
             sentence += f"{spl[i].replace(word, '[MASK]')} "
           else:
             sentence += f"{spl[i]} "
-        res = self.pred_word(sentence.strip(), word.lower(), None if len(total_text) == 0 and index == 0 else f"{total_text} {generate_input}".strip())
+        generate_context = ""
+        if self.args["partial"]:
+          if len(sentence_list) > self.args["partial"]:
+            sentence_list = sentence_list[-self.args["partial"]:]
+        elif self.args["full_input"] == False:
+          if title_sentence == False or len(sentence_list) > 1:
+            sentence_list = []
+        generate_context = f"{' '.join(sentence_list)} {generate_input}".strip()
+        print(f"Generate context for {word.lower()}: {generate_context}")
+        res = self.pred_word(sentence.strip(), word.lower(), generate_context)
         sentences[1] += res["mask_pred_word"] + " "
         stats["with_stop"].add_item(res)
         if word.lower() not in self.stop_word_list:
@@ -239,23 +248,26 @@ class Predictor:
         sentences[i] = newsent
     else:
       sentences = re.split(r'\n+', input_txt.strip())
+    title_sentence = data != False and "poem" in data["type"].lower()
+    sentences.insert(0, data["title"] if title_sentence else "")
+    sentences = list(filter(lambda x: len(x.strip()) > 0, sentences))
 
     if self.args["nsp_only"]:
       return self.get_nsp(sentences)
-      
+    
     sentence_counter = 0
-    total_text = ""
     #score_counter = 0
     for sentence in sentences:
-      if len(sentence.strip()) == 0:
-        continue
       sentence_counter += 1
-      res = self.get_predictions(sentence.strip(), total_text)
-      if self.args["full_input"]:
-        total_text = f"{total_text} {sentence}".strip()
+      if title_sentence and sentence_counter == 1:
+        continue
+      res = self.get_predictions(sentence.strip(), sentences[:sentence_counter-1], title_sentence=title_sentence)
       for word in result_list:
         stats[f"{word}_stop"].add_obj(res[f"{word}_stop"].get_data())
-      if len(sentences) > 1 and sentence_counter < (len(sentences)):
+      sentence_length = len(sentences)
+      if title_sentence:
+        sentence_length -= 1
+      if sentence_length > 1 and sentence_counter < sentence_length:
         encoding = self.tokenizer.encode_plus(sentences[sentence_counter - 1], sentences[sentence_counter], return_tensors='pt')
         if encoding['input_ids'].size(dim=1) > 512:
           continue

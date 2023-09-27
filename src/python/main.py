@@ -4,44 +4,52 @@ import math
 import json
 import requests
 import sys
+import datetime
 
 start = time.time()
 
 from predictor import Predictor
 
+args = {
+  "use_tokenizer": False,
+  "sentence_format": False,
+  "ignore_proper": False,
+  "nsp_only": False,
+  "args": [],
+  "book": False,
+  "essay": False,
+  "poem": False,
+  "logs": False,
+  "full_input": False,
+  "partial": False
+}
 def arg_parse():
-  args = {
-    "use_tokenizer": False,
-    "sentence_format": False,
-    "ignore_proper": False,
-    "nsp_only": False,
-    "args": [],
-    "book": False,
-    "essay": False,
-    "poem": False,
-    "logs": False,
-    "full_input": False
-  }
-  if len(sys.argv) == 1: return args
   sys.argv.pop(0)
   for arg in sys.argv:
     arg = arg.lower()
     if arg.startswith("-"):
-      if "token" in arg: args["use_tokenizer"] = True
-      elif "sent" in arg: args["sentence_format"] = True
-      elif "ignore" in arg or "proper" in arg: args["ignore_proper"] = True
-      elif "nsp" in arg: args["nsp_only"] = True
-      elif "book" in arg: args["book"] = True
-      elif "essay" in arg: args["essay"] = True
-      elif "poem" in arg: args["poem"] = True
-      elif "logs" in arg: args["logs"] = True
-      elif "full" in arg: args["full_input"] = True
+      for k in args.keys():
+        spl = k.split("_")
+        for s in spl:
+          if s in arg:
+            if "=" in arg:
+              # only integers supported at this time
+              args[k] = int(arg.split("=")[1])
+            else:
+              args[k] = True
     else:
       args["args"].append(arg)
-  return args
-
-args = arg_parse()
+arg_parse()
 arguments = args["args"]
+
+def publish_data(data):
+  timestamp = datetime.datetime.now().strftime('%d-%m-%Y_%H:%M:%S')
+  timestamp = timestamp.split('.')[0]
+  f = open(f'./output_{timestamp}.txt', 'w')
+  data = { "data": data }
+  data = json.dumps(data, indent=4)
+  f.write(data)
+  f.close()
 
 def get_book(selection):
   print(f"Starting to get predictions for {selection['title']}")
@@ -66,10 +74,9 @@ def get_book(selection):
   end_pos = end_pos.start()
     
   book = book[start_pos:end_pos]
-
   pred = Predictor(args)
-  
-  pred.run_predictor(book, data=selection)
+  res = pred.run_predictor(book, data=selection)
+  publish_data(res)
 
 def run_books():
   with open('./files/books.txt') as f:
@@ -132,9 +139,7 @@ def run_texts(content_type):
           result = pred.run_predictor(texts[txt], data=metadata)
           master_result.append(result)
           print()
-        print("Complete results array:\n")
-        print(json.dumps(master_result, indent=4))
-        print()
+        publish_data(master_result)
       else:
         print(f"ERROR: {arg1} is not a valid text")
     else:
@@ -143,7 +148,7 @@ def run_texts(content_type):
 if args["book"]: run_books()
 elif args["essay"]: run_texts("essays")
 elif args["poem"]: run_texts("poems")
-else: print("ERROR: no content specified to run program on. Full list of args:\n-token\n-sent\n-ignore / -proper\n-nsp\n-book\n-poem\n-essay\n-logs\n-full") 
+else: print("ERROR: no content specified to run program on. Full list of args:\n-token\n-sent\n-ignore / -proper\n-nsp\n-book\n-poem\n-essay\n-logs\n-full\n-partial [=(int)]") 
     
 end = time.time()
 seconds = end - start
@@ -155,4 +160,8 @@ else:
   if hours == 0:
     print(f"Program took {minutes} minutes and {math.floor(seconds) % 60} seconds to run.")
   else:
-    print(f"Program took {hours} hours and {minutes % 60} minutes to run.")
+    days = math.floor(hours / 24)
+    if days == 0:
+      print(f"Program took {hours} hours and {minutes % 60} minutes to run.")
+    else:
+      print(f"Program took {days} days and {hours % 24} hours to run.")
