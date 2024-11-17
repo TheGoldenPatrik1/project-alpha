@@ -47,7 +47,8 @@ class Predictor:
         "mask_pred_word": "UNKNOWN",
         "generate_result": "UNKNOWN",
         "generate_similarity": "Not Found",
-        "generate_pred_word": "UNKNOWN"
+        "generate_pred_word": "UNKNOWN",
+        "is_top_10": "UNKNOWN"
       }
     mask_index = torch.where(tokenized["input_ids"][0] == self.tokenizer.mask_token_id)
     mask_output = self.model(**tokenized)
@@ -56,20 +57,23 @@ class Predictor:
     generate_result = "UNKNOWN"
     generate_similarity = "Not Found"
     if generate_input != None and len(generate_input) > 0:
-      generate_length = (len(generate_input.split()) * 2) + 5
-      generate_output = self.generator(generate_input, max_length=generate_length)
-      generate_output = generate_output[0]['generated_text'].strip().split(generate_input)
-      if len(generate_output) > 1:
-        generate_output = generate_output[1].strip().split()
-        generate_output = generate_output[0].lower() if len(generate_output) > 0 else ""
-        generate_output = re.search(r"[\w\-']+", generate_output)
-        if generate_output != None:
-          generate_text = generate_output.group(0)
+      try:
+        generate_output = self.generator(generate_input, max_new_tokens=2)
+        generate_output = generate_output[0]['generated_text'].strip().split(generate_input)
+        if len(generate_output) > 1:
+          generate_output = generate_output[1].strip().split()
+          for put in generate_output:
+            generate_match = re.search(r"[\w\-']+", put)
+            if generate_match != None:
+              generate_text = generate_match.group(0).lower()
+              break
           generate_result = "CORRECT" if generate_text == correct_word else "INCORRECT"
           try:
             generate_similarity = round(100 * float(self.vec_model.similarity(correct_word, generate_text)), 2)
           except:
             generate_similarity = "Not Found"
+      except Exception as e:
+        print(f"error with generator: {e}")
 
     logits = mask_output.logits
     softmax = F.softmax(logits, dim = -1)
@@ -83,7 +87,8 @@ class Predictor:
         "mask_pred_word": "UNKNOWN",
         "generate_result": "UNKNOWN",
         "generate_similarity": "Not Found",
-        "generate_pred_word": "UNKNOWN"
+        "generate_pred_word": "UNKNOWN",
+        "is_top_10": "UNKNOWN"
       }
     top = torch.topk(mask_word, SEARCH_LIMIT, dim = 1)[1][0]
     tokens = []
@@ -95,41 +100,17 @@ class Predictor:
           break
     mask_result = "CORRECT" if tokens[0] == correct_word else "INCORRECT"
     is_top_10 = correct_word in tokens
-    #try:
-      #index = tokens.index(correct_word)
-    #except:
-      #index = "Not Found"
-    #display_index = f"{index}"
-    #if index == "Not Found":
-      #index = SEARCH_LIMIT
     try:
       mask_similarity = round(100 * float(self.vec_model.similarity(correct_word, tokens[0])), 2)
     except:
       mask_similarity = "Not Found"
-    #if index == 0:
-      #category = 1
-    #elif index == 1:
-      #category = 2
-    #elif index < 10:
-      #category = 3
-    #elif index < 100:
-      #category = 4
-    #elif index < 1000:
-      #category = 5
-    #elif index < 5000:
-      #category = 6
-    #else:
-      #category = 7
     is_stop = "TRUE" if correct_word in self.stop_word_list else "FALSE"
     if self.args["logs"]:
       formatters.print_word(
         masked_word=correct_word,
         mask_predicted_word=tokens[0],
         mask_prediction_result=mask_result,
-        #correct_index=display_index,
         mask_similarity=mask_similarity,
-        #top_predictions=', '.join(tokens[1:4]),
-        #prediction_category=category,
         generate_predicted_word=generate_text,
         generate_prediction_result=generate_result,
         generate_similarity=generate_similarity,
@@ -137,9 +118,7 @@ class Predictor:
       )
     return {
         "mask_result": mask_result,
-        #"index": index,
         "mask_similarity": mask_similarity,
-        #"category": category,
         "mask_pred_word": tokens[0],
         "generate_result": generate_result,
         "generate_similarity": generate_similarity,
@@ -189,7 +168,6 @@ class Predictor:
           if title_sentence == False or len(sentence_list) > 1:
             sentence_list = []
         generate_context = f"{' '.join(sentence_list)} {generate_input}".strip()
-        print(f"Generate context for {word.lower()}: {generate_context}")
         res = self.pred_word(sentence.strip(), word.lower(), generate_context)
         sentences[1] += res["mask_pred_word"] + " "
         stats["with_stop"].add_item(res)
@@ -210,7 +188,7 @@ class Predictor:
       print(f"Sentence similarity score: {sentence_similarity}")
 
     return stats
-
+  
   def get_nsp(self, sentences):
     total_score = 0
     total_count = 0
@@ -233,7 +211,7 @@ class Predictor:
     print(f"Compare with n(n-1): {len(sentences)*(len(sentences)-1)}")
     print(f"Average score: {round(total_score / total_count, 2)}")
   
-  def run_predictor(self, input_txt, data=False):
+  def run_predictor(self, input_txt, data=False):  
     stats = {}
     for word in result_list:
       stats[f"{word}_stop"] = Stats()

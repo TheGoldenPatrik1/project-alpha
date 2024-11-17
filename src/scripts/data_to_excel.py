@@ -3,13 +3,7 @@ import json
 import datetime
 
 filepath = './Documents/Other/ProjectAlpha/Output Files/'
-files = [
-    'output-poem-notfull2.out',
-    'output_26-09-2023_notfull.txt',
-    'output_27-09-2023_partial3.txt',
-    'output_25-09-2023_partial5.txt',
-    'output_26-09-2023_partial7.txt'
-]
+files = ['output-new-poems-partial.txt', 'output-new-poems-full.txt', 'output-new-essay-0-all.txt', 'output-new-essay-1-all.txt', 'output-new-essay-2-all.txt', 'output-new-essay-3-all.txt']
 dfs = []
 
 for file in files:
@@ -50,7 +44,7 @@ for file in files:
 timestamp = datetime.datetime.now().strftime('%d-%m-%Y %H:%M:%S')
 timestamp = timestamp.split('.')[0]
 with pd.ExcelWriter(f'{filepath}Excel/output [{timestamp}].xlsx') as excel_writer:
-    index = 1
+    index = 0
     for df in dfs:
-        df.to_excel(excel_writer, sheet_name=f'Sheet{index}', index=False)
+        df.to_excel(excel_writer, sheet_name=files[index].split(".")[0], index=False)
         index += 1

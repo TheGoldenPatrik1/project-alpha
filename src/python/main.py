@@ -145,10 +145,16 @@ def run_texts(content_type):
     else:
       print("ERROR: no text specified")
 
+def parse_item(arg):
+  spl = arg.split("_")
+  if len(spl) > 1:
+    return f"\n-{spl[0]} / -{spl[1]}"
+  return f"\n-{arg}"
+
 if args["book"]: run_books()
 elif args["essay"]: run_texts("essays")
 elif args["poem"]: run_texts("poems")
-else: print("ERROR: no content specified to run program on. Full list of args:\n-token\n-sent\n-ignore / -proper\n-nsp\n-book\n-poem\n-essay\n-logs\n-full\n-partial [=(int)]") 
+else: print(f"ERROR: no content specified to run program on. Full list of args:{''.join([parse_item(x) for x in args.keys()])}") 
     
 end = time.time()
 seconds = end - start

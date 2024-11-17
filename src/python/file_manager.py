@@ -37,13 +37,17 @@ def add_book():
 def add_text():
   text_type = input("Enter the text type (essays or poems): ")
   text_type = text_type.lower()
-  text_key = input("Enter the text key: ")
-  text_value = input("Enter the text value: ")
-  
   data = get_file('texts')
   if text_type not in list(data.keys()):
     print(f"ERROR: text type '{text_type}' not found")
     return
+  
+  text_key = input("Enter the text key: ")
+  if ", " not in text_key:
+    print("ERROR: text key must contain both author and title, separated by a comma")
+    return
+  text_value = input("Enter the text value: ")
+  
   data[text_type][text_key] = text_value
 
   set_file('texts', data)
